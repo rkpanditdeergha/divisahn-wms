@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WMS Pro - DIVISA HEERA NAGAR (AMBALA)</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#07090f;--bg2:#0d1117;--bg3:#111820;--bg4:#162030;
+  --bd:#1c2d40;--bd2:#243548;
+  --tx:#e8edf5;--tx2:#8ba4bf;--tx3:#3d5570;
+  --G:#00c896;--Gb:rgba(0,200,150,.09);--Gbd:rgba(0,200,150,.22);
+  --R:#ff4d6d;--Rb:rgba(255,77,109,.09);--Rbd:rgba(255,77,109,.22);
+  --B:#3b9eff;--Bb:rgba(59,158,255,.09);--Bbd:rgba(59,158,255,.22);
+  --A:#ffb830;--Ab:rgba(255,184,48,.09);--Abd:rgba(255,184,48,.22);
+  --ff:'Outfit',sans-serif;--fm:'DM Mono',monospace;--fd:'Syne',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--ff);font-size:14px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:4px;}
+input,select,button,textarea{font-family:var(--ff);}
+input::placeholder{color:var(--tx3);}
+
+#app{display:flex;height:100vh;overflow:hidden;}
+#sb{width:215px;background:var(--bg2);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;}
+#main{flex:1;overflow-y:auto;}
+
+.sb-head{padding:18px 16px 14px;border-bottom:1px solid var(--bd);}
+.sb-tag{font-family:var(--fd);font-size:10px;font-weight:700;color:var(--G);letter-spacing:.14em;text-transform:uppercase;}
+.sb-name{font-family:var(--fd);font-size:18px;font-weight:800;color:var(--tx);line-height:1.15;margin-top:3px;}
+.sb-sub{font-size:10px;color:var(--tx3);font-family:var(--fm);margin-top:2px;}
+.sb-nav{flex:1;padding:8px 7px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;}
+.sb-sec{font-size:9px;font-weight:700;color:var(--tx3);letter-spacing:.12em;text-transform:uppercase;padding:8px 9px 4px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:500;color:var(--tx2);border:1px solid transparent;background:none;width:100%;text-align:left;transition:all .15s;}
+.ni:hover{background:var(--Bb);color:var(--B);}
+.ni.on{background:var(--Gb);color:var(--G);border-color:var(--Gbd);}
+.sb-foot{padding:11px 13px;border-top:1px solid var(--bd);font-size:11px;color:var(--tx3);line-height:1.8;}
+.sb-foot b{color:var(--tx2);}
+.sb-badge{display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--G);background:var(--Gb);border:1px solid var(--Gbd);border-radius:20px;padding:2px 9px;margin-top:5px;}
+
+.page{display:none;padding:26px 30px;min-height:100%;animation:fu .25s ease;}
+.page.on{display:block;}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.ph{margin-bottom:22px;}
+.pt{font-family:var(--fd);font-size:21px;font-weight:800;color:var(--tx);display:flex;align-items:center;gap:9px;}
+.ps{font-size:12px;color:var(--tx3);margin-top:4px;}
+
+.card{background:var(--bg2);border:1px solid var(--bd);border-radius:14px;padding:18px;}
+.ct{font-family:var(--fd);font-size:12px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.04em;}
+
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid transparent;transition:all .15s;font-family:var(--ff);white-space:nowrap;}
+.btn:disabled{opacity:.4;cursor:not-allowed;}
+.bG{background:var(--Gb);color:var(--G);border-color:var(--Gbd);}.bG:hover:not(:disabled){background:rgba(0,200,150,.2);}
+.bR{background:var(--Rb);color:var(--R);border-color:var(--Rbd);}.bR:hover:not(:disabled){background:rgba(255,77,109,.2);}
+.bB{background:var(--Bb);color:var(--B);border-color:var(--Bbd);}.bB:hover:not(:disabled){background:rgba(59,158,255,.2);}
+.bA{background:var(--Ab);color:var(--A);border-color:var(--Abd);}.bA:hover{background:rgba(255,184,48,.2);}
+.bN{background:var(--bg3);color:var(--tx2);border-color:var(--bd);}.bN:hover{background:var(--bg4);color:var(--tx);}
+.bsm{padding:5px 11px;font-size:12px;}
+.bxs{padding:3px 9px;font-size:11px;}
+
+.fl{display:flex;flex-direction:column;gap:5px;}
+.fl label{font-size:10.5px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;}
+.fl label .rq{color:var(--R);margin-left:2px;}
+.inp{background:var(--bg3);border:1px solid var(--bd2);color:var(--tx);padding:8px 11px;border-radius:7px;font-size:13px;width:100%;transition:border .15s;outline:none;}
+.inp:focus{border-color:var(--B);}
+select.inp option{background:var(--bg2);}
+
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:13px;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;}
+
+.sc{border-radius:13px;padding:16px;border:1px solid;}
+.sl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;opacity:.55;margin-bottom:5px;}
+.sv{font-family:var(--fm);font-size:26px;font-weight:500;line-height:1;}
+.ss{font-size:11px;margin-top:4px;opacity:.45;}
+
+.tw{overflow-x:auto;}
+table.tb{width:100%;border-collapse:collapse;font-size:13px;}
+table.tb th{text-align:left;padding:9px 13px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--tx3);border-bottom:1px solid var(--bd);white-space:nowrap;}
+table.tb td{padding:10px 13px;border-bottom:1px solid rgba(28,45,64,.5);color:var(--tx2);vertical-align:middle;}
+table.tb tr:last-child td{border-bottom:none;}
+table.tb tr:hover td{background:rgba(59,158,255,.025);}
+
+.bg{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:700;font-family:var(--fm);}
+.bgi{background:rgba(0,200,150,.15);color:var(--G);}
+.bgo{background:rgba(255,77,109,.15);color:var(--R);}
+.chip{display:inline-block;background:var(--bg4);color:var(--B);padding:2px 7px;border-radius:5px;font-size:11px;font-family:var(--fm);border:1px solid var(--Bbd);}
+.chipN{color:var(--tx2);background:var(--bg3);border-color:var(--bd);}
+.tg{display:inline-block;padding:2px 7px;border-radius:5px;font-size:10.5px;font-weight:700;}
+.tgG{background:rgba(0,200,150,.15);color:var(--G);}
+.tgR{background:rgba(255,77,109,.15);color:var(--R);}
+.tgA{background:rgba(255,184,48,.15);color:var(--A);}
+
+.sl-lbl{font-family:var(--fd);font-size:11px;font-weight:700;color:var(--B);margin-bottom:12px;display:flex;align-items:center;gap:5px;text-transform:uppercase;letter-spacing:.05em;}
+.divider{height:1px;background:var(--bd);margin:16px 0;}
+
+#tw{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px;pointer-events:none;}
+.toast{display:flex;align-items:center;gap:9px;padding:11px 15px;border-radius:9px;font-size:13px;font-weight:500;min-width:255px;pointer-events:all;animation:tsi .2s ease;box-shadow:0 8px 32px rgba(0,0,0,.6);}
+.tok{background:#0a2a1f;border:1px solid var(--Gbd);color:var(--G);}
+.terr{background:#2a0a12;border:1px solid var(--Rbd);color:var(--R);}
+.tinf{background:#0a1a2a;border:1px solid var(--Bbd);color:var(--B);}
+.twrn{background:#2a1f0a;border:1px solid var(--Abd);color:var(--A);}
+@keyframes tsi{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+.mtab{padding:7px 15px;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--bd2);background:none;color:var(--tx3);transition:all .15s;}
+.mtab.on{background:var(--bg4);color:var(--tx);border-color:var(--bd);}
+.mtabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;}
+
+.bc{border:1px solid var(--bd2);border-radius:9px;padding:13px;cursor:pointer;transition:all .15s;}
+.bc:hover{border-color:var(--B);background:var(--Bb);}
+.bc.sel{border-color:var(--G);background:var(--Gb);}
+.bgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:9px;margin-top:10px;}
+
+.bbox{background:var(--bg3);border:1px solid var(--bd2);border-radius:9px;padding:14px 18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:13px 0;}
+
+.mrow{display:flex;align-items:center;gap:9px;padding:9px 11px;background:var(--bg);border-radius:7px;margin-bottom:5px;}
+.mbar-w{flex:1;height:3px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.mbar{height:100%;background:var(--G);border-radius:3px;}
+
+.gr-tb{width:100%;border-collapse:collapse;font-size:12px;}
+.gr-tb th{padding:7px 9px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);border-bottom:1px solid var(--bd);white-space:nowrap;}
+.gr-tb td{padding:5px 5px;border-bottom:1px solid rgba(28,45,64,.35);}
+.mi{background:var(--bg);border:1px solid var(--bd2);color:var(--tx);padding:5px 8px;border-radius:6px;font-size:12px;width:100%;outline:none;font-family:var(--fm);}
+.mi:focus{border-color:var(--B);}
+
+.al{border-radius:9px;padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:14px;font-size:13px;}
+.alW{background:var(--Ab);border:1px solid var(--Abd);color:var(--A);}
+.alR{background:var(--Rb);border:1px solid var(--Rbd);color:var(--R);}
+
+.eok{color:var(--G);}
+.ewrn{color:var(--A);}
+.edng{color:var(--R);}
+
+.binn{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:11px;}
+.binc{background:var(--bg2);border:1px solid var(--bd);border-radius:13px;padding:13px;transition:border .2s;}
+.binc.hs{border-color:var(--bd2);}
+.binc.emp{opacity:.3;}
+
+.toolrow{display:flex;gap:9px;align-items:center;flex-wrap:wrap;}
+.hint{font-size:12px;color:var(--tx3);line-height:1.55;margin-top:10px;}
+.search-hint{font-size:11px;color:var(--tx3);min-height:16px;margin-top:5px;}
+.inv-head .toolrow{justify-content:flex-end;}
+@media(max-width:980px){
+  html,body{height:auto;min-height:100%;}
+  #app{flex-direction:column;height:auto;min-height:100vh;overflow:visible;}
+  #sb{width:100%;border-right:0;border-bottom:1px solid var(--bd);}
+  #main{overflow:visible;}
+  .sb-head{padding:14px 16px;}
+  .sb-name{font-size:18px;}
+  .sb-nav{flex-direction:row;overflow-x:auto;padding:8px;gap:6px;}
+  .sb-sec{display:none;}
+  .ni{min-width:max-content;padding:9px 11px;}
+  .sb-foot{display:flex;gap:13px;align-items:center;flex-wrap:wrap;padding:10px 13px;}
+  .page{padding:18px 14px;}
+  .g2,.g3,.g4{grid-template-columns:1fr!important;}
+  .inv-head{display:block!important;}
+  .inv-head .toolrow{justify-content:flex-start;margin-top:12px;}
+  .inv-head .inp{width:100%!important;}
+  div[style*="grid-template-columns:1.3fr 1fr"]{grid-template-columns:1fr!important;}
+  .card{border-radius:10px;padding:14px;}
+}
+@media(max-width:620px){
+  .pt{font-size:18px;}
+  .btn{width:100%;justify-content:center;}
+  .toolrow .btn{width:100%;}
+  .bbox{align-items:flex-start;}
+  table.tb th,table.tb td{padding:8px 9px;}
+}
+</style>
+</head>
+<body>
+<div id="tw"></div>
+<div id="app">
+
+<!-- SIDEBAR -->
+<aside id="sb">
+  <div class="sb-head">
+    <div class="sb-tag">B2B · WMS Pro</div>
+    <div class="sb-name">Divisa<br>Heera Nagar</div>
+    <div class="sb-sub">Ambala Warehouse v2</div>
+  </div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Main</div>
+    <button class="ni on" id="n-dashboard" onclick="go('dashboard')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Dashboard</span>
+    </button>
+    <div class="sb-sec">Operations</div>
+    <button class="ni" id="n-stockin" onclick="go('stockin')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 3v14M5 10l7 7 7-7M3 21h18"/></svg>
+      <span>Stock In (GRN)</span>
+    </button>
+    <button class="ni" id="n-stockout" onclick="go('stockout')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M12 21V7M5 14l7-7 7 7M3 3h18"/></svg>
+      <span>Stock Out</span>
+    </button>
+    <div class="sb-sec">View</div>
+    <button class="ni" id="n-inventory" onclick="go('inventory')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+      <span>Inventory</span>
+    </button>
+    <button class="ni" id="n-transfer" onclick="go('transfer')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M7 7h13M17 4l3 3-3 3M17 17H4M7 14l-3 3 3 3"/></svg>
+      <span>Bin Transfer</span>
+    </button>
+    <button class="ni" id="n-bins" onclick="go('bins')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span>Bin Locations</span>
+    </button>
+    <button class="ni" id="n-history" onclick="go('history')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <span>History</span>
+    </button>
+    <div class="sb-sec">Settings</div>
+    <button class="ni" id="n-masters" onclick="go('masters')">
+      <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+      <span>Masters</span>
+    </button>
+  </nav>
+  <div class="sb-foot">
+    <div>SKUs: <b id="sb-s">—</b></div>
+    <div>Bins: <b id="sb-b">—</b></div>
+    <div>Txns: <b id="sb-t">—</b></div>
+    <div class="sb-badge">💾 100% Local · No Cloud</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main id="main">
+
+<!-- DASHBOARD -->
+<div class="page on" id="page-dashboard">
+  <div class="ph"><div class="pt">📊 Dashboard</div><div class="ps">DIVISA HEERA NAGAR (AMBALA) - Live warehouse - Data stored on this device only</div></div>
+  <div id="d-alert"></div>
+  <div class="g4" style="margin-bottom:20px" id="d-stats"></div>
+  <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px">
+    <div class="card"><div class="ct" style="color:var(--B)">📦 SKU Stock Overview</div><div id="d-skus"></div></div>
+    <div class="card"><div class="ct" style="color:var(--G)">🕐 Recent Transactions</div><div id="d-txns"></div></div>
+  </div>
+  <div class="card" style="margin-top:18px"><div class="ct" style="color:var(--A)">📈 Top Moving SKUs</div><div id="d-movers"></div></div>
+</div>
+
+<!-- STOCK IN -->
+<div class="page" id="page-stockin">
+  <div class="ph"><div class="pt" style="color:var(--G)">⬇ Stock In — GRN Entry</div><div class="ps">Invoice No., Invoice Date &amp; Gate Entry No. are mandatory.</div></div>
+  <div class="mtabs">
+    <button class="mtab on" id="mt-single" onclick="grnMode('single')">Single SKU</button>
+    <button class="mtab" id="mt-multi" onclick="grnMode('multi')">Multi-SKU Bulk Entry</button>
+  </div>
+  <!-- Invoice Header -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="sl-lbl">🧾 Invoice &amp; Gate Entry</div>
+    <div class="g3" style="margin-bottom:11px">
+      <div class="fl"><label>Invoice No <span class="rq">*</span></label><input class="inp" id="ii-no" placeholder="INV-2024-001"/></div>
+      <div class="fl"><label>Invoice Date <span class="rq">*</span></label><input class="inp" id="ii-dt" type="date"/></div>
+      <div class="fl"><label>Gate Entry No <span class="rq">*</span></label><input class="inp" id="ii-ge" placeholder="GE-001"/></div>
+    </div>
+    <div class="fl"><label>Remark / Supplier</label><input class="inp" id="ii-rm" placeholder="e.g. Supplier XYZ, PO#123"/></div>
+  </div>
+  <!-- Single -->
+  <div id="si-single">
+    <div class="card">
+      <div class="sl-lbl">📋 Product &amp; Batch</div>
+      <div class="g2" style="margin-bottom:11px">
+        <div class="fl"><label>Search SKU / Product Name <span class="rq">*</span></label><input class="inp" id="si-sku-q" placeholder="Type SKU or product name..." oninput="refreshSkuSearch('si-sku','si-sku-q','si-sku-hit',false,false)"/><div class="search-hint" id="si-sku-hit"></div><select class="inp" id="si-sku" style="margin-top:7px" onchange="syncSkuSearch('si-sku','si-sku-q','si-sku-hit',false)"></select></div>
+        <div class="fl"><label>Bin Location <span class="rq">*</span></label><select class="inp" id="si-bin"></select></div>
+      </div>
+      <div class="g4" style="margin-bottom:11px">
+        <div class="fl"><label>Quantity <span class="rq">*</span></label><input class="inp" id="si-qty" type="number" min="1" placeholder="0"/></div>
+        <div class="fl"><label>Batch Code</label><input class="inp" id="si-bat" placeholder="BATCH001"/></div>
+        <div class="fl"><label>Cost/Unit (₹)</label><input class="inp" id="si-cst" type="number" step="0.01" placeholder="0.00"/></div>
+        <div class="fl"><label>Vendor SKU</label><input class="inp" id="si-vsk" placeholder="Vendor code"/></div>
+      </div>
+      <div class="g3" style="margin-bottom:16px">
+        <div class="fl"><label>MFG Date</label><input class="inp" id="si-mfg" type="date"/></div>
+        <div class="fl"><label>EXP Date</label><input class="inp" id="si-exp" type="date"/></div>
+        <div class="fl"><label>EAN</label><input class="inp" id="si-ean" placeholder="8901234567890"/></div>
+      </div>
+      <button class="btn bG" onclick="doSingleIn()">⬇ Add Stock In</button>
+    </div>
+  </div>
+  <!-- Multi -->
+  <div id="si-multi" style="display:none">
+    <div class="card">
+      <div class="sl-lbl">📋 Multi-SKU Lines</div>
+      <div class="tw"><table class="gr-tb" id="gr-tb"><thead><tr>
+        <th style="min-width:165px">SKU *</th><th style="min-width:80px">Bin *</th>
+        <th style="min-width:65px">Qty *</th><th style="min-width:100px">Batch</th>
+        <th style="min-width:85px">Vendor SKU</th><th style="min-width:90px">Cost/Unit</th>
+        <th style="min-width:115px">MFG Date</th><th style="min-width:115px">EXP Date</th>
+        <th style="min-width:95px">EAN</th><th style="width:36px"></th>
+      </tr></thead><tbody id="gr-body"></tbody></table></div>
+      <div class="toolrow" style="margin-top:13px">
+        <input type="file" id="grn-upload" accept=".csv,.xlsx,.xls" style="display:none" onchange="uploadGrnRows(event)"/>
+        <button class="btn bG" onclick="document.getElementById('grn-upload').click()">Upload GRN CSV / XLSX</button>
+        <button class="btn bB" onclick="dlGrnTemplate()">Download GRN Template</button>
+      </div>
+      <div class="hint">GRN Bulk Upload Sheet headers: sku, bin, qty, batch, vendor_sku, cost, mfg, exp, ean.</div>
+      <div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">
+        <button class="btn bN" onclick="addRow()">+ Add Row</button>
+        <button class="btn bG" onclick="doMultiIn()">✓ Submit GRN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- STOCK OUT -->
+<div class="page" id="page-stockout">
+  <div class="ph"><div class="pt" style="color:var(--R)">⬆ Stock Out — Dispatch</div><div class="ps">Select SKU → see closing balance &amp; batches → set qty → confirm.</div></div>
+  <!-- Dispatch header -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="sl-lbl" style="color:var(--R)">🧾 Dispatch / Invoice Details</div>
+    <div class="g3" style="margin-bottom:11px">
+      <div class="fl"><label>Invoice No <span class="rq">*</span></label><input class="inp" id="oi-no" placeholder="INV-OUT-001"/></div>
+      <div class="fl"><label>Invoice Date <span class="rq">*</span></label><input class="inp" id="oi-dt" type="date"/></div>
+      <div class="fl"><label>Dispatch Date <span class="rq">*</span></label><input class="inp" id="oi-dd" type="date"/></div>
+    </div>
+    <div class="fl"><label>Remark / Customer</label><input class="inp" id="oi-rm" placeholder="e.g. Customer XYZ, Order #5678"/></div>
+  </div>
+  <!-- SKU Select -->
+  <div class="card" style="margin-bottom:14px">
+    <div class="sl-lbl" style="color:var(--R)">Step 1 — Select SKU</div>
+    <div style="max-width:340px">
+      <div class="fl"><label>Search SKU / Product Name <span class="rq">*</span></label><input class="inp" id="o-sku-q" placeholder="Type SKU or product name..." oninput="refreshSkuSearch('o-sku','o-sku-q','o-sku-hit',true,false)"/><div class="search-hint" id="o-sku-hit"></div><select class="inp" id="o-sku" style="margin-top:7px" onchange="syncSkuSearch('o-sku','o-sku-q','o-sku-hit',true)"></select></div>
+    </div>
+    <div id="o-bal" style="display:none" class="bbox">
+      <div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">PRODUCT</div><div style="font-size:13px;color:var(--tx);font-weight:600" id="o-pn">—</div></div>
+      <div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">BRAND</div><div style="font-size:12px;color:var(--tx2)" id="o-br">—</div></div>
+      <div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">MRP</div><div style="font-family:var(--fm);color:var(--A);font-weight:500" id="o-mrp">—</div></div>
+      <div style="margin-left:auto;text-align:right">
+        <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">CLOSING BALANCE</div>
+        <div style="font-family:var(--fm);font-size:28px;font-weight:500;line-height:1" id="o-bv">0</div>
+        <div style="font-size:11px;color:var(--tx3)" id="o-un">pcs</div>
+      </div>
+    </div>
+  </div>
+  <!-- Batches -->
+  <div class="card" id="o-bcard" style="display:none;margin-bottom:14px">
+    <div class="sl-lbl" style="color:var(--R)">Step 2 — Select Batches (click to add)</div>
+    <div class="bgrid" id="o-bgrid"></div>
+  </div>
+  <!-- Qty table -->
+  <div class="card" id="o-qcard" style="display:none;margin-bottom:14px">
+    <div class="sl-lbl" style="color:var(--R)">Step 3 — Set Dispatch Quantities</div>
+    <div class="tw"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Available</th><th>Dispatch Qty</th><th></th></tr></thead><tbody id="o-qtb"></tbody></table></div>
+    <div style="display:flex;align-items:center;gap:18px;margin-top:14px;flex-wrap:wrap">
+      <div style="font-size:13px;color:var(--tx2)">Total: <span style="font-family:var(--fm);font-size:20px;font-weight:500;color:var(--R)" id="o-tot">0</span></div>
+      <button class="btn bR" onclick="doStockOut()">⬆ Confirm Dispatch</button>
+    </div>
+  </div>
+  <div class="card" id="mo-card" style="margin-top:18px">
+    <div class="sl-lbl" style="color:var(--R)">Multi-SKU Batch Bill</div>
+    <div class="g2" style="margin-bottom:13px">
+      <div class="fl"><label>Search SKU / Product Name</label><input class="inp" id="mo-sku-q" placeholder="Type SKU or product name..." oninput="refreshMultiOutSkuSearch(false)"/><div class="search-hint" id="mo-sku-hit"></div><select class="inp" id="mo-sku" style="margin-top:7px" onchange="syncMultiOutSkuSearch()"></select></div>
+      <div class="fl"><label>Selected SKU Batches</label><div id="mo-stock" style="min-height:42px;color:var(--tx3);font-size:13px;padding-top:8px">Search SKU to add available batches.</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sl-lbl" style="color:var(--R)">Dispatch Cart</div>
+    <div class="tw"><table class="tb"><thead><tr><th>SKU</th><th>Product</th><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Available</th><th>Dispatch Qty</th><th></th></tr></thead><tbody id="mo-cart-body"></tbody></table></div>
+    <div style="display:flex;align-items:center;gap:18px;margin-top:14px;flex-wrap:wrap">
+      <div style="font-size:13px;color:var(--tx2)">Bill Total: <span style="font-family:var(--fm);font-size:20px;font-weight:500;color:var(--R)" id="mo-total">0</span></div>
+      <button class="btn bR" onclick="doMultiStockOut()">Confirm Multi-SKU Dispatch</button>
+    </div>
+  </div>
+</div>
+
+<!-- INVENTORY -->
+<div class="page" id="page-inventory">
+  <div class="ph inv-head" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div><div class="pt">Inventory</div><div class="ps">Full stock table with bin, batch, expiry, cost and valuation details.</div></div>
+    <div class="toolrow">
+      <input class="inp" id="inv-q" placeholder="Search SKU / product / bin / batch..." style="width:260px" oninput="renderInv()"/>
+      <button class="btn bB" onclick="dlInventory()">Download Full Inventory CSV</button>
+      <button class="btn bA" onclick="dlInventoryValuation()">Download Valuation CSV</button>
+    </div>
+  </div>
+  <div id="inv-summary" class="g4" style="margin-bottom:18px"></div>
+  <div id="inv-list"></div>
+</div>
+
+<!-- BIN TRANSFER -->
+<div class="page" id="page-transfer">
+  <div class="ph" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div><div class="pt">Bin Transfer</div><div class="ps">Move SKU stock from one bin to another. Total warehouse stock stays the same.</div></div>
+    <button class="btn bB" onclick="dlTransfers()">Download Transfer CSV</button>
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="sl-lbl">Step 1 - Search SKU</div>
+    <div class="g2">
+      <div class="fl"><label>Search SKU / Product Name <span class="rq">*</span></label><input class="inp" id="tr-sku-q" placeholder="Type SKU or product name..." oninput="refreshTransferSkuSearch(false)"/><div class="search-hint" id="tr-sku-hit"></div><select class="inp" id="tr-sku" style="margin-top:7px" onchange="syncTransferSkuSearch()"></select></div>
+      <div class="fl"><label>Created By</label><input class="inp" id="tr-by" placeholder="Name of user"/></div>
+    </div>
+  </div>
+  <div class="card" id="tr-stock-card" style="margin-bottom:14px">
+    <div class="sl-lbl">Step 2 - Select Old Bin / Batch</div>
+    <div id="tr-stock-list"></div>
+  </div>
+  <div class="card" id="tr-move-card" style="display:none;margin-bottom:14px">
+    <div class="sl-lbl">Step 3 - Move to New Bin</div>
+    <div id="tr-selected" class="bbox"></div>
+    <div class="g3" style="margin-bottom:14px">
+      <div class="fl"><label>New Bin <span class="rq">*</span></label><select class="inp" id="tr-new-bin"></select></div>
+      <div class="fl"><label>Quantity <span class="rq">*</span></label><input class="inp" id="tr-qty" type="number" min="1" placeholder="0"/></div>
+      <div class="fl"><label>Remark</label><input class="inp" id="tr-rm" placeholder="Reason / note"/></div>
+    </div>
+    <button class="btn bG" onclick="doBinTransfer()">Move SKU</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+      <div class="sl-lbl" style="margin-bottom:0">Recent Bin Transfers</div>
+      <span style="font-size:12px;color:var(--tx3)" id="tr-h-cnt"></span>
+    </div>
+    <div class="tw"><table class="tb"><thead><tr><th>SKU/EAN/UOM</th><th>Name</th><th>Old Status</th><th>New Status</th><th>Old Bin</th><th>New Bin</th><th>Quantity</th><th>Adjustment Time</th><th>Created By</th><th>Batch</th><th>Remark</th></tr></thead><tbody id="tr-h-body"></tbody></table></div>
+  </div>
+</div>
+<!-- BINS -->
+<div class="page" id="page-bins">
+  <div class="ph"><div class="pt">🗄 Bin Locations</div><div class="ps">Stock distributed across all bins.</div></div>
+  <input class="inp" id="bin-q" placeholder="🔍 Search bins or SKUs..." style="max-width:280px;margin-bottom:18px" oninput="renderBins()"/>
+  <div class="binn" id="bin-grid"></div>
+</div>
+
+<!-- HISTORY -->
+<div class="page" id="page-history">
+  <div class="ph" style="display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap">
+    <div><div class="pt">📋 Transaction History</div><div class="ps">Full audit log. All IN/OUT movements.</div></div>
+    <button class="btn bB" onclick="expAll()">📥 Export All CSV</button>
+  </div>
+  <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;align-items:center">
+    <button class="btn bN bsm on" id="hf-ALL" onclick="hFilt('ALL')">All</button>
+    <button class="btn bN bsm" id="hf-IN"  onclick="hFilt('IN')">IN Only</button>
+    <button class="btn bN bsm" id="hf-OUT" onclick="hFilt('OUT')">OUT Only</button>
+    <input class="inp" id="h-q" placeholder="Search SKU / invoice..." style="width:210px;padding:7px 11px" oninput="renderHist()"/>
+    <span style="font-size:12px;color:var(--tx3)" id="h-cnt"></span>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="tw">
+      <table class="tb">
+        <thead><tr><th>ID</th><th>Type</th><th>SKU</th><th>Product</th><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Qty</th><th>Invoice No</th><th>Inv Date</th><th>Gate/Dispatch</th><th>Cost</th><th>Remark</th><th>Timestamp</th></tr></thead>
+        <tbody id="h-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- MASTERS -->
+<div class="page" id="page-masters">
+  <div class="ph"><div class="pt">⚙ Masters</div><div class="ps">Manage SKUs, Bins and Data Backup.</div></div>
+  <div class="mtabs">
+    <button class="mtab on" id="ms-skus" onclick="mTab('skus')">SKU Master</button>
+    <button class="mtab" id="ms-bins" onclick="mTab('bins')">Bin Locations</button>
+    <button class="mtab" id="ms-data" onclick="mTab('data')">Backup / Restore</button>
+  </div>
+  <!-- SKUs -->
+  <div id="mv-skus">
+    <div class="card" style="margin-bottom:14px">
+      <div class="sl-lbl">Add New SKU</div>
+      <div class="g3" style="margin-bottom:11px">
+        <div class="fl"><label>SKU Code <span class="rq">*</span></label><input class="inp" id="m-sk" placeholder="DRB-40"/></div>
+        <div class="fl"><label>Product Name <span class="rq">*</span></label><input class="inp" id="m-nm" placeholder="DR.ORTHO BALM - 40GM"/></div>
+        <div class="fl"><label>Brand</label><input class="inp" id="m-br" placeholder="DR.ORTHO"/></div>
+      </div>
+      <div class="g3" style="margin-bottom:14px">
+        <div class="fl"><label>MRP (₹)</label><input class="inp" id="m-mr" type="number" step="0.01" placeholder="0.00"/></div>
+        <div class="fl"><label>Unit</label><select class="inp" id="m-un"><option>pcs</option><option>box</option><option>strip</option><option>bottle</option><option>kg</option><option>g</option><option>ml</option><option>ltr</option></select></div>
+        <div class="fl"><label>Category</label><input class="inp" id="m-ct" placeholder="Healthcare"/></div>
+      </div>
+      <button class="btn bB" onclick="addSku()">+ Add SKU</button>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="sl-lbl">Bulk SKU Creation Sheet</div>
+      <div class="toolrow">
+        <input type="file" id="sku-upload" accept=".csv,.xlsx,.xls" style="display:none" onchange="uploadSkus(event)"/>
+        <button class="btn bG" onclick="document.getElementById('sku-upload').click()">Upload CSV / XLSX</button>
+        <button class="btn bB" onclick="dlSkuTemplate()">Download SKU Template</button>
+      </div>
+      <div class="hint">Headers: sku, name, brand, mrp, unit, category. Existing SKU codes are updated; new codes are created.</div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tb"><thead><tr><th>SKU</th><th>Product Name</th><th>Brand</th><th>Category</th><th>MRP</th><th>Unit</th><th></th></tr></thead>
+      <tbody id="m-sku-body"></tbody></table>
+    </div>
+  </div>
+    <!-- Bins -->
+  <div id="mv-bins" style="display:none">
+    <div class="card" style="margin-bottom:14px">
+      <div class="sl-lbl">Add New Bin Location</div>
+      <div style="display:flex;gap:9px;align-items:flex-end;max-width:360px">
+        <div class="fl" style="flex:1"><label>Bin Code <span class="rq">*</span></label><input class="inp" id="m-bn" placeholder="D-01" onkeydown="if(event.key==='Enter')addBin()"/></div>
+        <button class="btn bB" onclick="addBin()">+ Add Bin</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="sl-lbl">Bulk BIN Creation Sheet</div>
+      <div class="toolrow">
+        <input type="file" id="bin-upload" accept=".csv,.xlsx,.xls" style="display:none" onchange="uploadBins(event)"/>
+        <button class="btn bG" onclick="document.getElementById('bin-upload').click()">Upload CSV / XLSX</button>
+        <button class="btn bB" onclick="dlBinTemplate()">Download BIN Template</button>
+      </div>
+      <div class="hint">Headers: bin, zone, aisle, rack. Only the bin code is required.</div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="tb"><thead><tr><th>Bin Code</th><th>Status</th><th></th></tr></thead>
+      <tbody id="m-bin-body"></tbody></table>
+    </div>
+  </div>
+  <!-- Data -->
+  <div id="mv-data" style="display:none">
+    <div class="g2" style="margin-bottom:14px">
+      <div class="card">
+        <div class="sl-lbl">Backup All Data</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:14px;line-height:1.65">Download a full JSON backup of all your SKUs, bins, stock and transactions. Store it safely to restore later.</p>
+        <button class="btn bB" onclick="backup()">📥 Download Backup JSON</button>
+      </div>
+      <div class="card">
+        <div class="sl-lbl">Restore Data</div>
+        <p style="font-size:13px;color:var(--tx2);margin-bottom:14px;line-height:1.65">Upload a previously downloaded backup file.<br><strong style="color:var(--R)">Warning: overwrites all current data.</strong></p>
+        <input type="file" id="rf" accept=".json" style="display:none" onchange="restore(event)"/>
+        <button class="btn bA" onclick="document.getElementById('rf').click()">📤 Upload Backup JSON</button>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:14px">
+      <div class="sl-lbl">Cloud Sync - Supabase</div>
+      <div class="g3" style="margin-bottom:12px">
+        <div class="fl"><label>Supabase Project URL</label><input class="inp" id="cloud-url" placeholder="https://xxxx.supabase.co"/></div>
+        <div class="fl"><label>Supabase Anon Key</label><input class="inp" id="cloud-key" placeholder="Paste anon public key"/></div>
+        <div class="fl"><label>Warehouse ID</label><input class="inp" id="cloud-wh" placeholder="main"/></div>
+      </div>
+      <div class="toolrow">
+        <button class="btn bG" onclick="saveCloudConfig()">Save & Connect</button>
+        <button class="btn bB" onclick="uploadLocalToCloud()">Upload Local Data</button>
+        <button class="btn bA" onclick="downloadCloudToLocal()">Download Cloud Data</button>
+        <button class="btn bN" onclick="downloadSupabaseSql()">Download Supabase SQL</button>
+      </div>
+      <div class="hint" id="cloud-status">Cloud sync is not connected.</div>
+    </div>    <div class="card" style="border-color:var(--Rbd)">
+      <div class="sl-lbl" style="color:var(--R)">Danger Zone</div>
+      <p style="font-size:13px;color:var(--tx2);margin-bottom:12px">Clear all transaction history. Cannot be undone.</p>
+      <button class="btn bR" onclick="clearHist()">🗑 Clear All Transactions</button>
+    </div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+// ─── Storage ───────────────────────────────────────────────────────────
+var LS={
+  get:function(k,d){try{var v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}},
+  set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){alert('Storage full! Please backup data.');}}
+};
+
+var DEFAULT_SKUS=[
+  {sku:'DRB-40',  name:'DR.ORTHO BALM - 40GM',                      brand:'DR.ORTHO',        mrp:136, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRC-30',  name:'DR.ORTHO CAPSULES - 30N',                   brand:'DR.ORTHO',        mrp:183, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRC-60',  name:'DR.ORTHO CAPSULES - 60N',                   brand:'DR.ORTHO',        mrp:295, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRO-120', name:'DR.ORTHO OIL - 120ML',                      brand:'DR.ORTHO',        mrp:295, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRO-200', name:'DR.ORTHO OIL - 200ML',                      brand:'DR.ORTHO',        mrp:395, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRO-60',  name:'DR.ORTHO OIL - 60ML',                       brand:'DR.ORTHO',        mrp:158, unit:'pcs',cat:'Healthcare'},
+  {sku:'DROT-30', name:'DR.ORTHO PAIN RELIEVING OINTMENT - 30GM',   brand:'DR.ORTHO',        mrp:98,  unit:'pcs',cat:'Healthcare'},
+  {sku:'DRS-75',  name:'DR.ORTHO AYURVEDIC PAIN RELIVER SPRAY - 75ML',brand:'DR.ORTHO',      mrp:165, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRSO-120',name:'DR.ORTHO STRONG OIL - 120ML',               brand:'DR.ORTHO',        mrp:450, unit:'pcs',cat:'Healthcare'},
+  {sku:'DRSO-60', name:'DR.ORTHO STRONG OIL - 60ML',                brand:'DR.ORTHO',        mrp:248, unit:'pcs',cat:'Healthcare'},
+  {sku:'EM-10',   name:'EYE MANTRA EYE DROPS - 10ML',               brand:'EYE MANTRA',      mrp:95,  unit:'pcs',cat:'Health & Personal Care'},
+  {sku:'EMP-10',  name:'EYE MANTRA PLUS EYE DROPS - 10ML',          brand:'EYE MANTRA PLUS', mrp:95,  unit:'pcs',cat:'Health & Personal Care'},
+  {sku:'MPC-40',  name:'MORE POWER CAPSULES - 40N',                 brand:'MORE POWER',      mrp:248, unit:'pcs',cat:'Healthcare'},
+  {sku:'PSG-120', name:'PET SAFFA NATURAL LAXATIVE GRANULES - 120GM',brand:'PET SAFFA',      mrp:125, unit:'pcs',cat:'Healthcare'},
+  {sku:'PSG-200', name:'PET SAFFA NATURAL LAXATIVE GRANULES - 200GM',brand:'PET SAFFA',      mrp:190, unit:'pcs',cat:'Healthcare'},
+  {sku:'PSG-60',  name:'PET SAFFA NATURAL LAXATIVE GRANULES - 60GM', brand:'PET SAFFA',      mrp:70,  unit:'pcs',cat:'Healthcare'}
+];
+var DEFAULT_BINS=['A-01','A-02','A-03','B-01','B-02','B-03','C-01','C-02','C-03'];
+
+var SKUS  = LS.get('wms2_skus', DEFAULT_SKUS);
+var BINS  = LS.get('wms2_bins', DEFAULT_BINS);
+var STOCK = LS.get('wms2_stock', {});
+var TXNS  = LS.get('wms2_txns', []);
+var MOVES = LS.get('wms2_moves', []);
+var MR    = []; // multi rows
+var OS    = []; // out selections
+var MO    = []; // multi-SKU stock-out cart
+var OB    = []; // out batches ref
+var MOB   = []; // multi-SKU stock-out batch ref
+var BT_SEL = null; // selected bin transfer batch
+var BT_BATCHES = []; // bin transfer stock rows
+var HF    = 'ALL';
+
+function saveLocalOnly(){
+  LS.set('wms2_skus', SKUS);
+  LS.set('wms2_bins', BINS);
+  LS.set('wms2_stock', STOCK);
+  LS.set('wms2_txns', TXNS);
+  LS.set('wms2_moves', MOVES);
+}
+
+function save(){
+  saveLocalOnly();
+  sbCounts();
+  if(typeof queueCloudSave==='function')queueCloudSave();
+}
+
+function genId(){return 'T'+Date.now().toString(36).toUpperCase()+Math.random().toString(36).slice(2,5).toUpperCase();}
+function today(){return new Date().toISOString().slice(0,10);}
+function fmtD(d){if(!d)return '—';try{var parts=d.split('-');return parts[2]+'/'+parts[1]+'/'+parts[0];}catch(e){return d;}}
+function fmtTs(){return new Date().toLocaleString('en-IN',{hour12:true});}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function gI(id){return document.getElementById(id);}
+function gV(id){var el=gI(id);return el?el.value.trim():'';}
+function sI(id,v){var el=gI(id);if(el)el.innerHTML=v;}
+function sD(id,v){var el=gI(id);if(el)el.style.display=v;}
+function sT(id,v){var el=gI(id);if(el)el.textContent=v;}
+
+function skuInfo(s){for(var i=0;i<SKUS.length;i++){if(SKUS[i].sku===s)return SKUS[i];}return {name:s,brand:'',mrp:0,unit:'pcs',cat:''};}
+
+function expSortValue(v){if(!v)return 8640000000000000;var t=new Date(v).getTime();return isNaN(t)?8640000000000000:t;}
+function fefoSort(a,b){var d=expSortValue(a.exp)-expSortValue(b.exp);if(d!==0)return d;return String(a.batch||'').localeCompare(String(b.batch||''));}
+function skuStock(sku){
+  var bm=STOCK[sku]||{};
+  var total=0,batches=[];
+  var bins=Object.keys(bm);
+  for(var i=0;i<bins.length;i++){
+    var bl=bm[bins[i]]||[];
+    for(var j=0;j<bl.length;j++){
+      if(bl[j].qty>0){total+=bl[j].qty;batches.push({batch:bl[j].batch,mfg:bl[j].mfg,exp:bl[j].exp,qty:bl[j].qty,cost:bl[j].cost,ean:bl[j].ean,vsku:bl[j].vsku,bin:bins[i]});}
+    }
+  }
+  batches.sort(fefoSort);
+  return {total:total,batches:batches};
+}
+
+function expCls(exp){
+  if(!exp)return '';
+  var d=new Date(exp); var now=new Date(); now.setHours(0,0,0,0);
+  if(d<now)return 'edng';
+  var soon=new Date(now); soon.setDate(soon.getDate()+60);
+  if(d<=soon)return 'ewrn';
+  return 'eok';
+}
+
+function expTag(exp){
+  if(!exp)return '—';
+  var d=new Date(exp); var now=new Date(); now.setHours(0,0,0,0);
+  if(d<now)return '<span class="tg tgR">EXPIRED</span>';
+  var soon=new Date(now); soon.setDate(soon.getDate()+30);
+  if(d<=soon)return '<span class="tg tgA">NEAR EXP</span>';
+  return '<span class="tg tgG">OK</span>';
+}
+
+// ─── Toast ──────────────────────────────────────────────────────────────
+function toast(msg,type){
+  type=type||'ok';
+  var wrap=gI('tw');
+  var el=document.createElement('div');
+  el.className='toast t'+type;
+  el.innerHTML='<span style="flex:1">'+msg+'</span><span onclick="this.parentNode.remove()" style="cursor:pointer;opacity:.55;font-size:16px;margin-left:8px">×</span>';
+  wrap.appendChild(el);
+  setTimeout(function(){el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},300);},3500);
+}
+
+// ─── Navigation ─────────────────────────────────────────────────────────
+function go(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('on');});
+  var pg=gI('page-'+id); if(pg)pg.classList.add('on');
+  var ni=gI('n-'+id); if(ni)ni.classList.add('on');
+  if(pg)LS.set('wms2_page',id);
+  if(id==='dashboard') renderDash();
+  if(id==='stockin')  initSI();
+  if(id==='stockout') initSO();
+  if(id==='inventory')renderInv();
+  if(id==='transfer') initTransfer();
+  if(id==='bins')     renderBins();
+  if(id==='history')  renderHist();
+  if(id==='masters')  renderMasters();
+}
+
+function sbCounts(){
+  sT('sb-s',SKUS.length);
+  sT('sb-b',BINS.length);
+  sT('sb-t',TXNS.length);
+}
+
+// ─── Dashboard ───────────────────────────────────────────────────────────
+function renderDash(){
+  var tu=0,ti=0,to=0;
+  for(var i=0;i<SKUS.length;i++)tu+=skuStock(SKUS[i].sku).total;
+  for(var i=0;i<TXNS.length;i++){if(TXNS[i].type==='IN')ti+=TXNS[i].qty;else to+=TXNS[i].qty;}
+  var ab=0;
+  for(var i=0;i<BINS.length;i++){
+    for(var j=0;j<SKUS.length;j++){
+      var bl=(STOCK[SKUS[j].sku]||{})[BINS[i]]||[];
+      var has=false;for(var k=0;k<bl.length;k++){if(bl[k].qty>0){has=true;break;}}
+      if(has){ab++;break;}
+    }
+  }
+  sI('d-stats',
+    sc(String(tu),'Total Stock','units in warehouse','var(--B)','var(--Bb)','var(--Bbd)')+
+    sc(String(ti),'Total IN','units received','var(--G)','var(--Gb)','var(--Gbd)')+
+    sc(String(to),'Total OUT','units dispatched','var(--R)','var(--Rb)','var(--Rbd)')+
+    sc(String(ab),'Active Bins','of '+BINS.length+' total','var(--A)','var(--Ab)','var(--Abd)')
+  );
+
+  // Expiry alerts
+  var alerts=[];
+  for(var i=0;i<SKUS.length;i++){
+    var bm=STOCK[SKUS[i].sku]||{};
+    var bins=Object.keys(bm);
+    for(var j=0;j<bins.length;j++){
+      var bl=bm[bins[j]]||[];
+      for(var k=0;k<bl.length;k++){
+        if(!bl[k].exp||bl[k].qty<=0)continue;
+        var d=new Date(bl[k].exp); var now=new Date(); now.setHours(0,0,0,0);
+        var soon=new Date(now); soon.setDate(soon.getDate()+30);
+        if(d<=soon)alerts.push({sku:SKUS[i].sku,name:SKUS[i].name,bin:bins[j],batch:bl[k].batch,exp:bl[k].exp,qty:bl[k].qty,expired:d<now});
+      }
+    }
+  }
+  var alHTML='';
+  if(alerts.length>0){
+    var exp=0; for(var i=0;i<alerts.length;i++){if(alerts[i].expired)exp++;}
+    alHTML='<div class="al '+(exp>0?'alR':'alW')+'" style="margin-bottom:16px">⚠ '+alerts.length+' batch(es) expiring/expired within 30 days — check Inventory for details.</div>';
+  }
+  sI('d-alert',alHTML);
+
+  // SKU table
+  var rows='';
+  for(var i=0;i<SKUS.length;i++){
+    var s=SKUS[i]; var st=skuStock(s.sku).total;
+    var col=st===0?'var(--tx3)':st<20?'var(--R)':st<50?'var(--A)':'var(--G)';
+    rows+='<tr><td><span class="chip">'+esc(s.sku)+'</span></td><td style="font-size:12px;color:var(--tx)">'+esc(s.name)+'</td><td style="font-family:var(--fm);font-weight:500;color:'+col+'">'+st+'</td><td><button class="btn bB bxs" onclick="dlLedger(\''+esc(s.sku)+'\')">📥 Ledger</button></td></tr>';
+  }
+  sI('d-skus','<div class="tw"><table class="tb"><thead><tr><th>SKU</th><th>Product</th><th>Stock</th><th></th></tr></thead><tbody>'+rows+'</tbody></table></div>');
+
+  // Recent txns
+  var rtHTML='';
+  if(TXNS.length===0){rtHTML='<div style="color:var(--tx3);font-size:13px;padding:12px 0">No transactions yet.</div>';}
+  else{
+    for(var i=0;i<Math.min(10,TXNS.length);i++){
+      var t=TXNS[i];
+      var col2=t.type==='IN'?'var(--G)':'var(--R)';
+      rtHTML+='<div class="mrow"><span class="bg '+(t.type==='IN'?'bgi':'bgo')+'">'+t.type+'</span><span class="chip chipN" style="font-size:10px">'+esc(t.sku)+'</span><span style="font-size:11px;color:var(--tx3);flex:1">'+esc(t.bin||'')+(t.batch&&t.batch!=='N/A'?' · '+esc(t.batch):'')+'</span><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:'+col2+'">'+(t.type==='IN'?'+':'-')+t.qty+'</span></div>';
+    }
+  }
+  sI('d-txns',rtHTML);
+
+  // Movers
+  var mv={};
+  for(var i=0;i<TXNS.length;i++){mv[TXNS[i].sku]=(mv[TXNS[i].sku]||0)+TXNS[i].qty;}
+  var arr=Object.keys(mv).map(function(k){return {sku:k,qty:mv[k]};});
+  arr.sort(function(a,b){return b.qty-a.qty;});
+  arr=arr.slice(0,8);
+  var mxq=arr.length>0?arr[0].qty:1;
+  var mHTML='';
+  if(arr.length===0){mHTML='<div style="color:var(--tx3);font-size:13px">No data yet.</div>';}
+  else{
+    for(var i=0;i<arr.length;i++){
+      var info=skuInfo(arr[i].sku); var bal=skuStock(arr[i].sku).total;
+      var pct=Math.round((arr[i].qty/mxq)*100);
+      var bc=bal<10?'var(--R)':'var(--G)';
+      mHTML+='<div class="mrow"><span class="chip" style="min-width:78px">'+esc(arr[i].sku)+'</span><span style="font-size:11.5px;color:var(--tx2);flex:1;min-width:180px">'+esc(info.name)+'</span><div class="mbar-w"><div class="mbar" style="width:'+pct+'%"></div></div><span style="font-family:var(--fm);font-size:11.5px;color:var(--A);min-width:55px;text-align:right">'+arr[i].qty+' mvd</span><span style="font-family:var(--fm);font-size:11.5px;color:'+bc+';min-width:48px;text-align:right">'+bal+' bal</span></div>';
+    }
+  }
+  sI('d-movers',mHTML);
+}
+
+function sc(val,lbl,sub,c,bg,bd){
+  return '<div class="sc" style="background:'+bg+';border-color:'+bd+'"><div class="sl" style="color:'+c+'">'+lbl+'</div><div class="sv" style="color:'+c+'">'+val+'</div><div class="ss">'+sub+'</div></div>';
+}
+
+// ─── Stock In ────────────────────────────────────────────────────────────
+var GRN_MODE='single';
+
+function initSI(){
+  fillSel('si-sku'); fillSel('si-bin','bin');
+  refreshSkuSearch('si-sku','si-sku-q','si-sku-hit',false,true);
+  if(!gV('ii-dt')) gI('ii-dt').value=today();
+  if(MR.length===0)addRow();
+  renderRows();
+}
+
+function grnMode(m){
+  GRN_MODE=m;
+  gI('mt-single').classList.toggle('on',m==='single');
+  gI('mt-multi').classList.toggle('on',m==='multi');
+  sD('si-single',m==='single'?'block':'none');
+  sD('si-multi',m==='multi'?'block':'none');
+}
+
+function doSingleIn(){
+  var no=gV('ii-no'),dt=gV('ii-dt'),ge=gV('ii-ge');
+  if(!no||!dt||!ge){toast('Invoice No, Invoice Date & Gate Entry are required','err');return;}
+  var sku=gV('si-sku'),bin=gV('si-bin'),qty=parseInt(gV('si-qty'));
+  if(!sku||!bin||!qty||qty<=0){toast('SKU, Bin and Quantity are required','err');return;}
+  var txn={id:genId(),type:'IN',ts:fmtTs(),sku:sku,bin:bin,qty:qty,
+    batch:gV('si-bat')||'N/A',mfg:gV('si-mfg'),exp:gV('si-exp'),
+    cost:parseFloat(gV('si-cst'))||0,vsku:gV('si-vsk'),ean:gV('si-ean'),
+    invoiceNo:no,invoiceDate:dt,gateEntry:ge,remark:gV('ii-rm')};
+  applyIn(txn); TXNS.unshift(txn); save();
+  toast('✓ Stock IN: '+qty+' × '+sku+' → Bin '+bin,'ok');
+  ['si-qty','si-bat','si-cst','si-vsk','si-ean'].forEach(function(id){gI(id).value='';});
+  gI('si-mfg').value=''; gI('si-exp').value='';
+}
+
+function applyIn(txn){
+  if(!STOCK[txn.sku])STOCK[txn.sku]={};
+  if(!STOCK[txn.sku][txn.bin])STOCK[txn.sku][txn.bin]=[];
+  var list=STOCK[txn.sku][txn.bin];
+  var found=false;
+  for(var i=0;i<list.length;i++){
+    if(list[i].batch===txn.batch&&list[i].mfg===txn.mfg&&list[i].exp===txn.exp){list[i].qty+=txn.qty;found=true;break;}
+  }
+  if(!found)list.push({batch:txn.batch,mfg:txn.mfg,exp:txn.exp,qty:txn.qty,cost:txn.cost,ean:txn.ean,vsku:txn.vsku});
+}
+
+function skuMatchesSearch(s,q){
+  q=String(q||'').toLowerCase().trim();
+  if(!q)return true;
+  var text=(s.sku+' '+s.name+' '+s.brand+' '+(s.cat||'')).toLowerCase();
+  return text.indexOf(q)>=0;
+}
+function filteredSkus(q){
+  var out=[];
+  for(var i=0;i<SKUS.length;i++){if(skuMatchesSearch(SKUS[i],q))out.push(SKUS[i]);}
+  return out;
+}
+function fillSkuSelect(id,q,preferCurrent){
+  var el=gI(id); if(!el)return 0;
+  var cur=preferCurrent?el.value:'';
+  var rows=filteredSkus(q);
+  if(rows.length===0){el.innerHTML='<option value="">No matching SKU</option>';el.value='';return 0;}
+  var selected='';
+  if(cur){for(var i=0;i<rows.length;i++){if(rows[i].sku===cur){selected=cur;break;}}}
+  if(!selected)selected=rows[0].sku;
+  var html='';
+  for(var j=0;j<rows.length;j++){
+    html+='<option value="'+esc(rows[j].sku)+'"'+(rows[j].sku===selected?' selected':'')+'>'+esc(rows[j].sku)+' - '+esc(rows[j].name)+'</option>';
+  }
+  el.innerHTML=html;
+  el.value=selected;
+  return rows.length;
+}
+function skuSearchMessage(count,q){
+  if(count===0)return 'No SKU found. Try SKU code or product name.';
+  return count+' SKU'+(count===1?'':'s')+' found'+(q?' for "'+q+'"':'.');
+}
+function resetStockOutSkuView(){
+  OS=[]; OB=[];
+  sD('o-bal','none'); sD('o-bcard','none'); sD('o-qcard','none');
+  renderMultiOutCart();
+  renderOQ();
+}
+function refreshSkuSearch(selectId,inputId,msgId,autoLoad,preferCurrent){
+  var q=gV(inputId);
+  var count=fillSkuSelect(selectId,q,preferCurrent);
+  sT(msgId,skuSearchMessage(count,q));
+  if(autoLoad){if(count>0)loadSku();else resetStockOutSkuView();}
+}
+function syncSkuSearch(selectId,inputId,msgId,autoLoad){
+  var sku=gV(selectId);
+  if(sku){var info=skuInfo(sku);var input=gI(inputId);if(input)input.value=sku+' - '+info.name;}
+  sT(msgId,sku?'Selected '+sku:'No SKU selected');
+  if(autoLoad){if(sku)loadSku();else resetStockOutSkuView();}
+}
+function addRow(){
+  MR.push({id:genId(),sku:SKUS[0]?SKUS[0].sku:'',bin:BINS[0]||'',qty:'',bat:'',vsk:'',cst:'',mfg:'',exp:'',ean:''});
+  renderRows();
+}
+
+function renderRows(){
+  var body=gI('gr-body'); if(!body)return;
+  var skuOpts=''; for(var i=0;i<SKUS.length;i++)skuOpts+='<option value="'+esc(SKUS[i].sku)+'">'+esc(SKUS[i].sku)+' – '+esc(SKUS[i].name)+'</option>';
+  var binOpts=''; for(var i=0;i<BINS.length;i++)binOpts+='<option value="'+esc(BINS[i])+'">'+esc(BINS[i])+'</option>';
+  var html='';
+  for(var i=0;i<MR.length;i++){
+    var r=MR[i];
+    var so=skuOpts.replace('value="'+r.sku+'"','value="'+r.sku+'" selected');
+    var bo=binOpts.replace('value="'+r.bin+'"','value="'+r.bin+'" selected');
+    html+='<tr id="mr-'+r.id+'">';
+    html+='<td><select class="mi" onchange="mrUpd(\''+r.id+'\',\'sku\',this.value)">'+so+'</select></td>';
+    html+='<td><select class="mi" onchange="mrUpd(\''+r.id+'\',\'bin\',this.value)">'+bo+'</select></td>';
+    html+='<td><input class="mi" type="number" min="1" value="'+esc(r.qty)+'" placeholder="0" onchange="mrUpd(\''+r.id+'\',\'qty\',this.value)"/></td>';
+    html+='<td><input class="mi" value="'+esc(r.bat)+'" placeholder="Batch" onchange="mrUpd(\''+r.id+'\',\'bat\',this.value)"/></td>';
+    html+='<td><input class="mi" value="'+esc(r.vsk)+'" placeholder="Vendor SKU" onchange="mrUpd(\''+r.id+'\',\'vsk\',this.value)"/></td>';
+    html+='<td><input class="mi" type="number" step="0.01" value="'+esc(r.cst)+'" placeholder="0.00" onchange="mrUpd(\''+r.id+'\',\'cst\',this.value)"/></td>';
+    html+='<td><input class="mi" type="date" value="'+esc(r.mfg)+'" onchange="mrUpd(\''+r.id+'\',\'mfg\',this.value)"/></td>';
+    html+='<td><input class="mi" type="date" value="'+esc(r.exp)+'" onchange="mrUpd(\''+r.id+'\',\'exp\',this.value)"/></td>';
+    html+='<td><input class="mi" value="'+esc(r.ean)+'" placeholder="EAN" onchange="mrUpd(\''+r.id+'\',\'ean\',this.value)"/></td>';
+    html+='<td><button class="btn bR bxs" onclick="delRow(\''+r.id+'\')">✕</button></td></tr>';
+  }
+  body.innerHTML=html;
+}
+
+function mrUpd(id,k,v){for(var i=0;i<MR.length;i++){if(MR[i].id===id){MR[i][k]=v;break;}}}
+function delRow(id){MR=MR.filter(function(r){return r.id!==id;});renderRows();}
+
+function doMultiIn(){
+  var no=gV('ii-no'),dt=gV('ii-dt'),ge=gV('ii-ge');
+  if(!no||!dt||!ge){toast('Invoice No, Invoice Date & Gate Entry are required','err');return;}
+  var cnt=0,total=0;
+  for(var i=0;i<MR.length;i++){
+    var r=MR[i]; var qty=parseInt(r.qty);
+    if(!r.sku||!r.bin||!qty||qty<=0)continue;
+    var txn={id:genId(),type:'IN',ts:fmtTs(),sku:r.sku,bin:r.bin,qty:qty,
+      batch:r.bat||'N/A',mfg:r.mfg,exp:r.exp,cost:parseFloat(r.cst)||0,vsku:r.vsk,ean:r.ean,
+      invoiceNo:no,invoiceDate:dt,gateEntry:ge,remark:gV('ii-rm')};
+    applyIn(txn); TXNS.unshift(txn); cnt++; total+=qty;
+  }
+  if(cnt===0){toast('No valid rows found','err');return;}
+  save(); toast('✓ GRN submitted: '+cnt+' lines, '+total+' units','ok');
+  MR=[{id:genId(),sku:SKUS[0]?SKUS[0].sku:'',bin:BINS[0]||'',qty:'',bat:'',vsk:'',cst:'',mfg:'',exp:'',ean:''}];
+  renderRows();
+}
+
+// ─── Stock Out ────────────────────────────────────────────────────────────
+function initSO(){
+  fillSel('o-sku');
+  refreshSkuSearch('o-sku','o-sku-q','o-sku-hit',false,true);
+  fillSel('mo-sku');
+  refreshMultiOutSkuSearch(true);
+  if(!gV('oi-dt'))gI('oi-dt').value=today();
+  if(!gV('oi-dd'))gI('oi-dd').value=today();
+  OS=[]; OB=[];
+  sD('o-bal','none'); sD('o-bcard','none'); sD('o-qcard','none');
+  renderMultiOutCart();
+  renderOQ();
+}
+
+function loadSku(){
+  var sku=gV('o-sku'); if(!sku)return;
+  var info=skuInfo(sku); var st=skuStock(sku);
+  OS=[]; OB=st.batches;
+
+  sD('o-bal','flex');
+  sT('o-pn',info.name); sT('o-br',info.brand); sT('o-mrp','₹'+info.mrp); sT('o-un',info.unit);
+  var bv=gI('o-bv'); bv.textContent=st.total;
+  bv.style.color=st.total===0?'var(--tx3)':st.total<20?'var(--R)':st.total<50?'var(--A)':'var(--G)';
+
+  if(OB.length>0){
+    sD('o-bcard','block');
+    var bgHTML='';
+    for(var i=0;i<OB.length;i++){
+      var b=OB[i];
+      var ec=expCls(b.exp);
+      var expired=b.exp&&new Date(b.exp)<new Date();
+      bgHTML+='<div class="bc" id="bc-'+i+'" onclick="togBatch('+i+')">';
+      bgHTML+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px"><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:var(--tx)">'+esc(b.batch)+'</span><span class="chip chipN" style="font-size:10px">'+esc(b.bin)+'</span></div>';
+      bgHTML+='<div style="font-size:11px;color:var(--tx3);margin-bottom:3px">MFG: <span style="color:var(--tx2)">'+fmtD(b.mfg)+'</span></div>';
+      bgHTML+='<div style="font-size:11px;margin-bottom:7px">EXP: <span class="'+ec+'">'+fmtD(b.exp)+'</span> '+expTag(b.exp)+'</div>';
+      bgHTML+='<div style="font-family:var(--fm);font-size:15px;font-weight:500;color:var(--G)">'+b.qty+' <span style="font-size:10px;color:var(--tx3)">'+esc(info.unit)+'</span></div>';
+      bgHTML+='</div>';
+    }
+    sI('o-bgrid',bgHTML);
+  } else {
+    sD('o-bcard','none');
+    sD('o-qcard','none');
+  }
+  renderOQ();
+}
+
+function togBatch(idx){
+  var b=OB[idx];
+  var found=-1;
+  for(var i=0;i<OS.length;i++){
+    if(OS[i].bin===b.bin&&OS[i].batch===b.batch&&OS[i].mfg===b.mfg&&OS[i].exp===b.exp){found=i;break;}
+  }
+  var card=gI('bc-'+idx);
+  if(found>=0){OS.splice(found,1);if(card)card.classList.remove('sel');}
+  else{OS.push({bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,qty:0,maxQty:b.qty});if(card)card.classList.add('sel');}
+  renderOQ();
+}
+
+function renderOQ(){
+  if(OS.length===0){sD('o-qcard','none');return;}
+  sD('o-qcard','block');
+  var html='';
+  var tot=0;
+  for(var i=0;i<OS.length;i++){
+    var s=OS[i]; tot+=s.qty;
+    var ec=expCls(s.exp);
+    html+='<tr><td><span class="chip chipN">'+esc(s.bin)+'</span></td>';
+    html+='<td style="font-family:var(--fm);font-size:11.5px">'+esc(s.batch)+'</td>';
+    html+='<td style="font-size:11.5px">'+fmtD(s.mfg)+'</td>';
+    html+='<td style="font-size:11.5px" class="'+ec+'">'+fmtD(s.exp)+'</td>';
+    html+='<td style="font-family:var(--fm);color:var(--tx2)">'+s.maxQty+'</td>';
+    html+='<td><input class="inp" type="number" min="0" max="'+s.maxQty+'" value="'+(s.qty||'')+'" style="width:85px;padding:6px 9px" oninput="oqUpd('+i+',this.value)"/>'+(s.qty>s.maxQty?'<div style="font-size:10px;color:var(--R)">Exceeds stock</div>':'')+'</td>';
+    html+='<td><button class="btn bR bxs" onclick="remOS('+i+')">✕</button></td></tr>';
+  }
+  sI('o-qtb',html);
+  sT('o-tot',tot);
+}
+
+function oqUpd(i,v){OS[i].qty=parseInt(v)||0;var tot=0;for(var j=0;j<OS.length;j++)tot+=OS[j].qty;sT('o-tot',tot);}
+function remOS(i){
+  var rem=OS[i];
+  OS.splice(i,1);
+  for(var j=0;j<OB.length;j++){
+    if(OB[j].bin===rem.bin&&OB[j].batch===rem.batch&&OB[j].mfg===rem.mfg&&OB[j].exp===rem.exp){
+      var c=gI('bc-'+j);if(c)c.classList.remove('sel');break;
+    }
+  }
+  renderOQ();
+}
+
+function doStockOut(){
+  var no=gV('oi-no'),dt=gV('oi-dt'),dd=gV('oi-dd');
+  if(!no){toast('Invoice No is required','err');return;}
+  if(!dt){toast('Invoice Date is required','err');return;}
+  if(!dd){toast('Dispatch Date is required','err');return;}
+  var sku=gV('o-sku');
+  var valid=[];
+  for(var i=0;i<OS.length;i++){if(OS[i].qty>0)valid.push(OS[i]);}
+  if(valid.length===0){toast('Select batches and enter quantities','err');return;}
+  for(var i=0;i<valid.length;i++){if(valid[i].qty>valid[i].maxQty){toast('Some quantities exceed available stock','err');return;}}
+  var totalQty=0;
+  for(var i=0;i<valid.length;i++){
+    var s=valid[i]; totalQty+=s.qty;
+    var list=(STOCK[sku]||{})[s.bin]||[];
+    for(var j=0;j<list.length;j++){
+      if(list[j].batch===s.batch&&list[j].mfg===s.mfg&&list[j].exp===s.exp){
+        list[j].qty-=s.qty;
+        if(list[j].qty<=0)list.splice(j,1);
+        break;
+      }
+    }
+    if(list.length===0&&STOCK[sku]&&STOCK[sku][s.bin])delete STOCK[sku][s.bin];
+  }
+  var bins=[],batches=[],mfgs=[],exps=[];
+  for(var i=0;i<valid.length;i++){bins.push(valid[i].bin);batches.push(valid[i].batch);mfgs.push(valid[i].mfg);exps.push(valid[i].exp);}
+  var txn={id:genId(),type:'OUT',ts:fmtTs(),sku:sku,qty:totalQty,
+    bin:bins.join(', '),batch:batches.join(', '),mfg:mfgs.join(', '),exp:exps.join(', '),
+    invoiceNo:no,invoiceDate:dt,dispatchDate:dd,remark:gV('oi-rm'),
+    selections:valid.map(function(s){return {bin:s.bin,batch:s.batch,mfg:s.mfg,exp:s.exp,qty:s.qty};})};
+  TXNS.unshift(txn); save();
+  toast('✓ Stock OUT: '+totalQty+' × '+sku+' | Invoice '+no,'ok');
+  OS=[]; gI('oi-no').value=''; gI('oi-rm').value='';
+  loadSku();
+}
+
+// ─── Inventory ────────────────────────────────────────────────────────────
+// Multi-SKU Stock Out
+function refreshMultiOutSkuSearch(preferCurrent){
+  var q=gV('mo-sku-q');
+  var count=fillSkuSelect('mo-sku',q,preferCurrent);
+  sT('mo-sku-hit',skuSearchMessage(count,q));
+  if(count>0)loadMultiOutSku();else sI('mo-stock','No matching SKU found.');
+}
+function syncMultiOutSkuSearch(){
+  var sku=gV('mo-sku');
+  if(sku){var info=skuInfo(sku);var input=gI('mo-sku-q');if(input)input.value=sku+' - '+info.name;}
+  sT('mo-sku-hit',sku?'Selected '+sku:'No SKU selected');
+  if(sku)loadMultiOutSku();
+}
+function loadMultiOutSku(){
+  var sku=gV('mo-sku'); if(!sku){sI('mo-stock','Search SKU to add available batches.');return;}
+  MOB=skuStock(sku).batches.slice();
+  renderMultiOutBatches();
+}
+function sameOutLine(a,b){return a&&b&&a.sku===b.sku&&a.bin===b.bin&&a.batch===b.batch&&a.mfg===b.mfg&&a.exp===b.exp;}
+function moCartQty(b){var n=0;for(var i=0;i<MO.length;i++){if(sameOutLine(MO[i],b))n+=parseInt(MO[i].qty)||0;}return n;}
+function renderMultiOutBatches(){
+  var sku=gV('mo-sku'); if(!sku){sI('mo-stock','Search SKU to add available batches.');return;}
+  var info=skuInfo(sku);
+  if(MOB.length===0){sI('mo-stock','No available stock for '+esc(sku)+'.');return;}
+  var html='<div class="tw"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>EXP</th><th>Available</th><th>Add Qty</th><th></th></tr></thead><tbody>';
+  for(var i=0;i<MOB.length;i++){
+    var b=MOB[i]; var used=moCartQty({sku:sku,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp}); var rem=(parseInt(b.qty)||0)-used;
+    html+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(b.batch||'N/A')+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td style="font-family:var(--fm);color:'+(rem>0?'var(--G)':'var(--tx3)')+'">'+rem+'</td><td><input class="inp" id="mo-add-'+i+'" type="number" min="1" max="'+rem+'" placeholder="0" style="width:90px;padding:6px 8px" '+(rem<=0?'disabled':'')+'/></td><td><button class="btn bB bxs" onclick="addMultiOutBatch('+i+')" '+(rem<=0?'disabled':'')+'>Add</button></td></tr>';
+  }
+  html+='</tbody></table></div><div style="font-size:11px;color:var(--tx3);margin-top:8px">Adding from '+esc(info.name)+'</div>';
+  sI('mo-stock',html);
+}
+function addMultiOutBatch(idx){
+  var sku=gV('mo-sku'); var b=MOB[idx]; if(!sku||!b)return;
+  var input=gI('mo-add-'+idx); var qty=parseInt(input?input.value:'',10);
+  var used=moCartQty({sku:sku,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp}); var rem=(parseInt(b.qty)||0)-used;
+  if(!qty||qty<=0){toast('Enter quantity to add','err');return;}
+  if(qty>rem){toast('Quantity exceeds remaining stock for this batch','err');return;}
+  var line={sku:sku,name:skuInfo(sku).name,bin:b.bin,batch:b.batch||'N/A',mfg:b.mfg,exp:b.exp,available:b.qty,qty:qty};
+  var merged=false;
+  for(var i=0;i<MO.length;i++){if(sameOutLine(MO[i],line)){MO[i].qty+=qty;merged=true;break;}}
+  if(!merged)MO.push(line);
+  if(input)input.value='';
+  renderMultiOutCart(); renderMultiOutBatches();
+}
+function moTotal(){var t=0;for(var i=0;i<MO.length;i++)t+=parseInt(MO[i].qty)||0;return t;}
+function moUpd(i,v){MO[i].qty=parseInt(v)||0;sT('mo-total',moTotal());}
+function moRemove(i){MO.splice(i,1);renderMultiOutCart();renderMultiOutBatches();}
+function renderMultiOutCart(){
+  var body=gI('mo-cart-body'); if(!body)return;
+  if(MO.length===0){body.innerHTML='<tr><td colspan="9" style="text-align:center;padding:28px;color:var(--tx3)">No SKU batches added to this bill.</td></tr>';sT('mo-total','0');return;}
+  var html='';
+  for(var i=0;i<MO.length;i++){
+    var l=MO[i]; var ec=expCls(l.exp);
+    html+='<tr><td><span class="chip">'+esc(l.sku)+'</span></td><td style="color:var(--tx);min-width:150px">'+esc(l.name)+'</td><td><span class="chip chipN">'+esc(l.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(l.batch||'N/A')+'</td><td>'+fmtD(l.mfg)+'</td><td class="'+ec+'">'+fmtD(l.exp)+'</td><td style="font-family:var(--fm);color:var(--tx2)">'+l.available+'</td><td><input class="inp" type="number" min="1" max="'+l.available+'" value="'+l.qty+'" style="width:92px;padding:6px 8px" onchange="moUpd('+i+',this.value)"/></td><td><button class="btn bR bxs" onclick="moRemove('+i+')">Remove</button></td></tr>';
+  }
+  body.innerHTML=html;sT('mo-total',moTotal());
+}
+function currentOutLine(l){
+  var list=(STOCK[l.sku]||{})[l.bin]||[];
+  for(var i=0;i<list.length;i++){if(list[i].batch===l.batch&&list[i].mfg===l.mfg&&list[i].exp===l.exp)return {list:list,line:list[i],idx:i};}
+  return null;
+}
+function doMultiStockOut(){
+  var no=gV('oi-no'),dt=gV('oi-dt'),dd=gV('oi-dd');
+  if(!no){toast('Invoice No is required','err');return;}
+  if(!dt){toast('Invoice Date is required','err');return;}
+  if(!dd){toast('Dispatch Date is required','err');return;}
+  if(MO.length===0){toast('Add SKU batches to dispatch cart','err');return;}
+  for(var i=0;i<MO.length;i++){
+    var l=MO[i]; var q=parseInt(l.qty)||0; var cur=currentOutLine(l);
+    if(!q||q<=0){toast('Cart has invalid quantity','err');return;}
+    if(!cur||cur.line.qty<q){toast('Stock changed for '+l.sku+' / '+l.batch+'. Reload and try again.','err');return;}
+  }
+  var groups={};
+  for(var i=0;i<MO.length;i++){
+    var l=MO[i]; var q=parseInt(l.qty)||0; var cur=currentOutLine(l);
+    cur.line.qty-=q;
+    if(cur.line.qty<=0)cur.list.splice(cur.idx,1);
+    if(cur.list.length===0&&STOCK[l.sku])delete STOCK[l.sku][l.bin];
+    if(!groups[l.sku])groups[l.sku]=[];
+    groups[l.sku].push({sku:l.sku,bin:l.bin,batch:l.batch,mfg:l.mfg,exp:l.exp,qty:q});
+  }
+  var skuKeys=Object.keys(groups);
+  for(var g=0;g<skuKeys.length;g++){
+    var sku=skuKeys[g], lines=groups[sku], total=0,bins=[],batches=[],mfgs=[],exps=[];
+    for(var j=0;j<lines.length;j++){total+=lines[j].qty;bins.push(lines[j].bin);batches.push(lines[j].batch);mfgs.push(lines[j].mfg);exps.push(lines[j].exp);}
+    TXNS.unshift({id:genId(),type:'OUT',ts:fmtTs(),sku:sku,qty:total,bin:bins.join(', '),batch:batches.join(', '),mfg:mfgs.join(', '),exp:exps.join(', '),invoiceNo:no,invoiceDate:dt,dispatchDate:dd,remark:gV('oi-rm'),selections:lines});
+  }
+  save();
+  toast('Multi-SKU dispatch submitted: '+skuKeys.length+' SKUs, '+moTotal()+' units','ok');
+  MO=[];gI('oi-no').value='';gI('oi-rm').value='';renderMultiOutCart();loadMultiOutSku();
+}
+function renderInv(){
+  renderInvSummary();
+  var q=(gI('inv-q')?gI('inv-q').value.toLowerCase():'');
+  var html='';
+  for(var i=0;i<SKUS.length;i++){
+    var s=SKUS[i]; var st=skuStock(s.sku); var hay=(s.sku+' '+s.name+' '+s.brand+' '+(s.cat||'')).toLowerCase();
+    var batchMatch=st.batches.some(function(b){return (String(b.bin)+' '+String(b.batch)+' '+String(b.ean)+' '+String(b.vsku)).toLowerCase().indexOf(q)>=0;});
+    if(q&&hay.indexOf(q)<0&&!batchMatch)continue;
+    var tot=st.total;
+    var col=tot===0?'var(--tx3)':tot<20?'var(--R)':tot<50?'var(--A)':'var(--G)';
+    var bHTML='';
+    if(st.batches.length>0){
+      bHTML='<div class="tw" style="border-top:1px solid var(--bd)"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Status</th><th>Vendor SKU</th><th>EAN</th><th style="text-align:right">Qty</th><th style="text-align:right">Cost</th><th style="text-align:right">Value</th></tr></thead><tbody>';
+      for(var j=0;j<st.batches.length;j++){
+        var b=st.batches[j]; var ec=expCls(b.exp); var cost=parseNum(b.cost); var val=(parseInt(b.qty)||0)*cost;
+        bHTML+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm);font-size:11.5px">'+esc(b.batch)+'</td><td style="font-size:11.5px">'+fmtD(b.mfg)+'</td><td style="font-size:11.5px" class="'+ec+'">'+fmtD(b.exp)+'</td><td>'+expTag(b.exp)+'</td><td style="font-size:11px;color:var(--tx3)">'+esc(b.vsku||'')+'</td><td style="font-family:var(--fm);font-size:11px;color:var(--tx3)">'+esc(b.ean||'')+'</td><td style="text-align:right;font-family:var(--fm);font-weight:500;color:var(--G)">'+b.qty+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px">Rs. '+money(cost)+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px;color:var(--A)">Rs. '+money(val)+'</td></tr>';
+      }
+      bHTML+='</tbody></table></div>';
+    }
+    html+='<div class="card" style="margin-bottom:11px;padding:0;overflow:hidden">';
+    html+='<div style="display:flex;align-items:center;gap:13px;padding:14px 18px;flex-wrap:wrap">';
+    html+='<div style="flex:1;min-width:200px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap"><span class="chip">'+esc(s.sku)+'</span><span style="font-size:11px;color:var(--tx3)">'+esc(s.brand)+'</span><span style="font-size:11px;color:var(--tx3)">'+esc(s.cat||'')+'</span></div><div style="font-size:13.5px;color:var(--tx);font-weight:600">'+esc(s.name)+'</div></div>';
+    html+='<div style="text-align:center"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">MRP</div><div style="font-family:var(--fm);color:var(--A)">Rs. '+money(s.mrp)+'</div></div>';
+    html+='<div style="text-align:center"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">BATCHES</div><div style="font-family:var(--fm);color:var(--tx2)">'+st.batches.length+'</div></div>';
+    html+='<div style="text-align:right"><div style="font-size:10px;color:var(--tx3);margin-bottom:2px">STOCK</div><div style="font-family:var(--fm);font-size:24px;font-weight:500;line-height:1;color:'+col+'">'+tot+'</div><div style="font-size:10px;color:var(--tx3)">'+esc(s.unit)+'</div></div>';
+    html+='<button class="btn bB bsm" onclick="dlLedger(\''+esc(s.sku)+'\')">Ledger CSV</button>';
+    html+='</div>'+bHTML+'</div>';
+  }
+  sI('inv-list',html||'<div style="color:var(--tx3);font-size:13px;padding:24px">No inventory found.</div>');
+}
+function dlLedger(sku){
+  var info=skuInfo(sku);
+  var rows=[['Date','Type','SKU','Product','Bin','Batch','MFG Date','EXP Date','Qty IN','Qty OUT','Balance','Invoice No','Invoice Date','Gate Entry / Dispatch Date','Cost','Remark','Txn ID']];
+  var bal=0;
+  var filtered=[];
+  for(var i=0;i<TXNS.length;i++){if(TXNS[i].sku===sku)filtered.push(TXNS[i]);}
+  for(var i=0;i<filtered.length;i++){
+    var t=filtered[i];
+    var qIn=t.type==='IN'?t.qty:0; var qOut=t.type==='OUT'?t.qty:0;
+    bal+=qIn-qOut;
+    rows.push([t.ts,t.type,t.sku,info.name,t.bin||'',t.batch||'',t.mfg||'',t.exp||'',qIn,qOut,bal,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'',t.id]);
+  }
+  dlCSV('Ledger_'+sku+'_'+today()+'.csv',rows);
+  toast('📥 Ledger downloaded for '+sku,'inf');
+}
+
+// ─── Bins ─────────────────────────────────────────────────────────────────
+// Bin Transfer
+function initTransfer(){
+  if(!gV('tr-by')){var by=LS.get('wms2_transfer_by','');if(by)gI('tr-by').value=by;}
+  refreshTransferSkuSearch(true);
+  renderTransferHistory();
+}
+function refreshTransferSkuSearch(preferCurrent){
+  var q=gV('tr-sku-q');
+  var count=fillSkuSelect('tr-sku',q,preferCurrent);
+  sT('tr-sku-hit',skuSearchMessage(count,q));
+  if(count>0)loadTransferSku();else resetTransferSource();
+}
+function syncTransferSkuSearch(){
+  var sku=gV('tr-sku');
+  if(sku){var info=skuInfo(sku);var input=gI('tr-sku-q');if(input)input.value=sku+' - '+info.name;}
+  sT('tr-sku-hit',sku?'Selected '+sku:'No SKU selected');
+  if(sku)loadTransferSku();else resetTransferSource();
+}
+function resetTransferSource(){
+  BT_SEL=null;BT_BATCHES=[];
+  sI('tr-stock-list','<div style="color:var(--tx3);font-size:13px;padding:12px 0">Search and select a SKU to see available bins.</div>');
+  sD('tr-move-card','none');
+}
+function loadTransferSku(){
+  var sku=gV('tr-sku');
+  if(!sku){resetTransferSource();return;}
+  var info=skuInfo(sku); var st=skuStock(sku);
+  BT_SEL=null; BT_BATCHES=st.batches.slice();
+  sD('tr-stock-card','block'); sD('tr-move-card','none');
+  if(BT_BATCHES.length===0){sI('tr-stock-list','<div style="color:var(--tx3);font-size:13px;padding:12px 0">No available stock for '+esc(sku)+'.</div>');return;}
+  var html='<div style="font-size:13px;color:var(--tx2);margin-bottom:12px"><span class="chip">'+esc(sku)+'</span> '+esc(info.name)+' - Total '+st.total+' '+esc(info.unit)+'</div>';
+  html+='<div class="tw"><table class="tb"><thead><tr><th>Old Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Status</th><th>Available Qty</th><th></th></tr></thead><tbody>';
+  for(var i=0;i<BT_BATCHES.length;i++){
+    var b=BT_BATCHES[i];
+    html+='<tr id="tr-src-'+i+'"><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(b.batch||'N/A')+'</td><td>'+fmtD(b.mfg)+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td><span class="tg tgG">Available</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500">'+b.qty+'</td><td><button class="btn bB bxs" onclick="selectTransferBatch('+i+')">Select</button></td></tr>';
+  }
+  html+='</tbody></table></div>';
+  sI('tr-stock-list',html);
+}
+function fillTransferNewBins(oldBin){
+  var el=gI('tr-new-bin'); if(!el)return 0;
+  var html='',count=0;
+  for(var i=0;i<BINS.length;i++){
+    if(BINS[i]===oldBin)continue;
+    html+='<option value="'+esc(BINS[i])+'">'+esc(BINS[i])+'</option>';count++;
+  }
+  el.innerHTML=html;
+  return count;
+}
+function selectTransferBatch(idx){
+  var b=BT_BATCHES[idx]; if(!b)return;
+  BT_SEL={idx:idx,sku:gV('tr-sku'),bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,qty:b.qty,cost:b.cost,ean:b.ean,vsku:b.vsku};
+  for(var i=0;i<BT_BATCHES.length;i++){var row=gI('tr-src-'+i);if(row)row.style.background=i===idx?'rgba(0,200,150,.08)':'';}
+  var info=skuInfo(BT_SEL.sku);
+  var newCount=fillTransferNewBins(BT_SEL.bin);
+  sI('tr-selected','<div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">SKU</div><div><span class="chip">'+esc(BT_SEL.sku)+'</span> '+esc(info.name)+'</div></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Status</div><span class="tg tgG">Available</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Bin</div><span class="chip chipN">'+esc(BT_SEL.bin)+'</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Batch</div><span style="font-family:var(--fm)">'+esc(BT_SEL.batch||'N/A')+'</span></div><div style="margin-left:auto;text-align:right"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Available</div><div style="font-family:var(--fm);font-size:22px;color:var(--G)">'+BT_SEL.qty+'</div></div>');
+  var qty=gI('tr-qty'); if(qty){qty.value='';qty.max=BT_SEL.qty;qty.placeholder='Max '+BT_SEL.qty;}
+  sD('tr-move-card',newCount>0?'block':'none');
+  if(newCount===0)toast('Create another bin first. No destination bin available.','err');
+}
+function sameStockLine(a,b){return a&&b&&a.batch===b.batch&&a.mfg===b.mfg&&a.exp===b.exp;}
+function doBinTransfer(){
+  if(!BT_SEL){toast('Select old bin / batch first','err');return;}
+  var sku=BT_SEL.sku, oldBin=BT_SEL.bin, newBin=gV('tr-new-bin'), qty=parseInt(gV('tr-qty'),10);
+  if(!newBin){toast('Select new bin','err');return;}
+  if(newBin===oldBin){toast('Old bin and new bin cannot be same','err');return;}
+  if(!qty||qty<=0){toast('Enter transfer quantity','err');return;}
+  var list=(STOCK[sku]||{})[oldBin]||[];
+  var line=null,idx=-1;
+  for(var i=0;i<list.length;i++){if(sameStockLine(list[i],BT_SEL)){line=list[i];idx=i;break;}}
+  if(!line||line.qty<qty){toast('Source stock changed. Reload SKU and try again.','err');loadTransferSku();return;}
+  var moved={batch:line.batch,mfg:line.mfg,exp:line.exp,qty:qty,cost:line.cost,ean:line.ean,vsku:line.vsku};
+  line.qty-=qty;
+  if(line.qty<=0)list.splice(idx,1);
+  if(list.length===0&&STOCK[sku])delete STOCK[sku][oldBin];
+  if(!STOCK[sku])STOCK[sku]={};
+  if(!STOCK[sku][newBin])STOCK[sku][newBin]=[];
+  var dest=STOCK[sku][newBin],merged=false;
+  for(var j=0;j<dest.length;j++){if(sameStockLine(dest[j],moved)){dest[j].qty+=qty;merged=true;break;}}
+  if(!merged)dest.push(moved);
+  var info=skuInfo(sku); var by=gV('tr-by')||'Admin'; LS.set('wms2_transfer_by',by);
+  var rec={id:genId(),sku:sku,name:info.name,unit:info.unit,oldStatus:'Available',newStatus:'Available',oldBin:oldBin,newBin:newBin,qty:qty,ts:fmtTs(),createdBy:by,batch:moved.batch||'N/A',mfg:moved.mfg,exp:moved.exp,ean:moved.ean||'',remark:gV('tr-rm')};
+  MOVES.unshift(rec); save();
+  toast('Moved '+qty+' x '+sku+' from '+oldBin+' to '+newBin,'ok');
+  gI('tr-qty').value=''; gI('tr-rm').value='';
+  loadTransferSku(); renderTransferHistory();
+}
+function renderTransferHistory(){
+  var body=gI('tr-h-body'); if(!body)return;
+  sT('tr-h-cnt',MOVES.length+' transfers');
+  if(MOVES.length===0){body.innerHTML='<tr><td colspan="11" style="text-align:center;padding:30px;color:var(--tx3)">No bin transfers yet.</td></tr>';return;}
+  var html='';
+  for(var i=0;i<Math.min(MOVES.length,100);i++){
+    var m=MOVES[i]; var info=skuInfo(m.sku);
+    html+='<tr><td><span class="chip">'+esc(m.sku)+'</span><div style="font-size:10px;color:var(--tx3);margin-top:3px">'+esc(m.ean||info.unit||'')+'</div></td><td style="color:var(--tx);min-width:170px">'+esc(m.name||info.name)+'</td><td><span class="tg tgG">'+esc(m.oldStatus||'Available')+'</span></td><td><span class="tg tgG">'+esc(m.newStatus||'Available')+'</span></td><td><span class="chip chipN">'+esc(m.oldBin)+'</span></td><td><span class="chip chipN">'+esc(m.newBin)+'</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500;text-align:right">'+m.qty+'</td><td style="font-size:11px;color:var(--tx2);white-space:nowrap">'+esc(m.ts)+'</td><td>'+esc(m.createdBy||'')+'</td><td style="font-family:var(--fm)">'+esc(m.batch||'N/A')+'</td><td style="color:var(--tx3)">'+esc(m.remark||'')+'</td></tr>';
+  }
+  body.innerHTML=html;
+}
+function dlTransfers(){
+  var rows=[['SKU/EAN/UOM','Name','Old Status','New Status','Old Bin','New Bin','Quantity','Adjustment Time','Created By','Batch','Remark']];
+  for(var i=0;i<MOVES.length;i++){
+    var m=MOVES[i]; var info=skuInfo(m.sku);
+    rows.push([m.sku+(m.ean?' / '+m.ean:'')+' / '+(m.unit||info.unit||''),m.name||info.name,m.oldStatus||'Available',m.newStatus||'Available',m.oldBin,m.newBin,m.qty,m.ts,m.createdBy||'',m.batch||'N/A',m.remark||'']);
+  }
+  dlCSV('WMS_Bin_Transfers_'+today()+'.csv',rows);toast('Bin transfer CSV downloaded','inf');
+}
+function renderBins(){
+  var q=(gI('bin-q')?gI('bin-q').value.toLowerCase():'');
+  var html='';
+  for(var i=0;i<BINS.length;i++){
+    var bin=BINS[i];
+    var items=[]; var total=0;
+    for(var j=0;j<SKUS.length;j++){
+      var bl=(STOCK[SKUS[j].sku]||{})[bin]||[];
+      for(var k=0;k<bl.length;k++){if(bl[k].qty>0){items.push({sku:SKUS[j].sku,qty:bl[k].qty});total+=bl[k].qty;}}
+    }
+    if(q&&bin.toLowerCase().indexOf(q)<0&&!items.some(function(it){return it.sku.toLowerCase().indexOf(q)>=0;}))continue;
+    var hasStock=total>0;
+    html+='<div class="binc '+(hasStock?'hs':'emp')+'">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-family:var(--fm);font-weight:500;font-size:14px;color:var(--tx)">'+esc(bin)+'</span><span style="font-family:var(--fm);font-size:20px;font-weight:500;color:'+(hasStock?'var(--B)':'var(--tx3)')+'">'+total+'</span></div>';
+    if(items.length>0){
+      for(var j=0;j<items.length;j++){
+        html+='<div style="display:flex;justify-content:space-between;font-size:11px;margin-top:4px"><span class="chip chipN" style="font-size:10px">'+esc(items[j].sku)+'</span><span style="font-family:var(--fm);color:var(--tx3)">'+items[j].qty+'</span></div>';
+      }
+    }else{html+='<div style="font-size:11px;color:var(--tx3)">Empty</div>';}
+    html+='</div>';
+  }
+  sI('bin-grid',html||'<div style="color:var(--tx3);font-size:13px">No bins found.</div>');
+}
+
+// ─── History ─────────────────────────────────────────────────────────────
+function hFilt(f){
+  HF=f;
+  ['ALL','IN','OUT'].forEach(function(x){
+    var el=gI('hf-'+x);
+    if(el){el.className='btn bN bsm'+(x===f?' on':'');el.style.background=x===f?'rgba(59,158,255,.12)':'';el.style.color=x===f?'var(--B)':'';el.style.borderColor=x===f?'var(--Bbd)':'var(--bd)';}
+  });
+  renderHist();
+}
+
+function renderHist(){
+  var q=(gI('h-q')?gI('h-q').value.toLowerCase():'');
+  var rows=[];
+  for(var i=0;i<TXNS.length;i++){
+    var t=TXNS[i];
+    if(HF!=='ALL'&&t.type!==HF)continue;
+    if(q&&t.sku.toLowerCase().indexOf(q)<0&&(t.invoiceNo||'').toLowerCase().indexOf(q)<0&&(t.batch||'').toLowerCase().indexOf(q)<0)continue;
+    rows.push(t);
+  }
+  sT('h-cnt',rows.length+' records');
+  if(rows.length===0){sI('h-body','<tr><td colspan="15" style="text-align:center;padding:36px;color:var(--tx3)">No transactions found.</td></tr>');return;}
+  var html='';
+  for(var i=0;i<rows.length;i++){
+    var t=rows[i]; var col=t.type==='IN'?'var(--G)':'var(--R)';
+    html+='<tr><td style="font-family:var(--fm);font-size:10px;color:var(--tx3)">'+t.id.slice(-7)+'</td>';
+    html+='<td><span class="bg '+(t.type==='IN'?'bgi':'bgo')+'">'+t.type+'</span></td>';
+    html+='<td><span class="chip">'+esc(t.sku)+'</span></td>';
+    html+='<td style="font-size:11.5px;color:var(--tx2);max-width:150px">'+esc(skuInfo(t.sku).name)+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11px">'+esc(t.bin||'')+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11px">'+esc(t.batch||'')+'</td>';
+    html+='<td style="font-size:11px">'+fmtD(t.mfg)+'</td>';
+    var ec=expCls(t.exp);
+    html+='<td style="font-size:11px" class="'+ec+'">'+fmtD(t.exp)+'</td>';
+    html+='<td style="font-family:var(--fm);font-weight:500;color:'+col+'">'+(t.type==='IN'?'+':'-')+t.qty+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11px">'+esc(t.invoiceNo||'—')+'</td>';
+    html+='<td style="font-size:11px">'+fmtD(t.invoiceDate)+'</td>';
+    html+='<td style="font-size:11px">'+esc(t.gateEntry||t.dispatchDate||'—')+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11px">'+(t.cost?'₹'+t.cost:'')+'</td>';
+    html+='<td style="font-size:11px;color:var(--tx3);max-width:110px">'+esc(t.remark||'')+'</td>';
+    html+='<td style="font-size:10px;color:var(--tx3);white-space:nowrap">'+esc(t.ts)+'</td></tr>';
+  }
+  sI('h-body',html);
+}
+
+function expAll(){
+  var headers=['ID','Date','Type','SKU','Product','Bin','Batch','MFG','EXP','Qty','Invoice No','Invoice Date','Gate/Dispatch','Cost','Remark'];
+  var rows=[headers];
+  for(var i=0;i<TXNS.length;i++){
+    var t=TXNS[i];
+    rows.push([t.id,t.ts,t.type,t.sku,skuInfo(t.sku).name,t.bin||'',t.batch||'',t.mfg||'',t.exp||'',t.qty,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'']);
+  }
+  dlCSV('WMS_History_'+today()+'.csv',rows);
+  toast('📥 Exported '+TXNS.length+' records','inf');
+}
+
+// Supabase Cloud Sync
+var CLOUD=null;
+var CLOUD_CHANNEL=null;
+var CLOUD_TIMER=null;
+var CLOUD_READY=false;
+var CLOUD_LOADING=false;
+var CLOUD_TABLE='wms_state';
+function cloudCfg(){return LS.get('wms2_cloud_cfg',{url:'',key:'',warehouse:'main'});}
+function setCloudStatus(msg,type){
+  var el=gI('cloud-status'); if(!el)return;
+  el.textContent=msg;
+  el.style.color=type==='ok'?'var(--G)':type==='err'?'var(--R)':type==='warn'?'var(--A)':'var(--tx3)';
+}
+function initCloudUI(){
+  var cfg=cloudCfg();
+  if(gI('cloud-url'))gI('cloud-url').value=cfg.url||'';
+  if(gI('cloud-key'))gI('cloud-key').value=cfg.key||'';
+  if(gI('cloud-wh'))gI('cloud-wh').value=cfg.warehouse||'main';
+  if(cfg.url&&cfg.key)connectCloud(true);
+}
+function cloudSnapshot(){
+  return {skus:SKUS,bins:BINS,stock:STOCK,txns:TXNS,moves:MOVES,updatedAt:new Date().toISOString(),app:'divisa-wms'};
+}
+function applyCloudSnapshot(data){
+  if(!data)return;
+  CLOUD_LOADING=true;
+  SKUS=data.skus||[]; BINS=data.bins||[]; STOCK=data.stock||{}; TXNS=data.txns||[]; MOVES=data.moves||[];
+  saveLocalOnly(); sbCounts(); CLOUD_LOADING=false;
+  refreshActivePage();
+}
+function refreshActivePage(){
+  var active=document.querySelector('.page.on');
+  var id=active?active.id.replace('page-',''):LS.get('wms2_page','dashboard');
+  if(gI('page-'+id))go(id);
+}
+function cloudClient(){
+  var cfg=cloudCfg();
+  if(!cfg.url||!cfg.key)return null;
+  if(!window.supabase||!window.supabase.createClient){setCloudStatus('Supabase library not loaded. Check internet connection.','err');return null;}
+  return window.supabase.createClient(cfg.url,cfg.key);
+}
+function saveCloudConfig(){
+  var cfg={url:gV('cloud-url'),key:gV('cloud-key'),warehouse:gV('cloud-wh')||'main'};
+  if(!cfg.url||!cfg.key){setCloudStatus('Paste Supabase URL and anon key first.','err');return;}
+  LS.set('wms2_cloud_cfg',cfg);
+  connectCloud(false);
+}
+async function connectCloud(silent){
+  try{
+    CLOUD=cloudClient(); if(!CLOUD)return;
+    CLOUD_READY=false; setCloudStatus('Connecting to Supabase...','warn');
+    await downloadCloudToLocal(true);
+    subscribeCloudChanges(); CLOUD_READY=true;
+    setCloudStatus('Connected. Live sync is active.','ok');
+    if(!silent)toast('Cloud sync connected','ok');
+  }catch(err){setCloudStatus('Cloud connection failed: '+err.message,'err');}
+}
+async function downloadCloudToLocal(silent){
+  CLOUD=CLOUD||cloudClient(); if(!CLOUD)return;
+  var cfg=cloudCfg(); CLOUD_LOADING=true;
+  var res=await CLOUD.from(CLOUD_TABLE).select('data').eq('id',cfg.warehouse||'main').maybeSingle();
+  CLOUD_LOADING=false;
+  if(res.error){setCloudStatus('Cloud pull failed. Run SQL setup first. '+res.error.message,'err');return;}
+  if(!res.data){await uploadLocalToCloud(true);return;}
+  applyCloudSnapshot(res.data.data);
+  setCloudStatus('Cloud data downloaded.','ok');
+  if(!silent)toast('Cloud data downloaded','ok');
+}
+async function uploadLocalToCloud(silent){
+  CLOUD=CLOUD||cloudClient(); if(!CLOUD)return;
+  var cfg=cloudCfg(); var row={id:cfg.warehouse||'main',data:cloudSnapshot(),updated_at:new Date().toISOString()};
+  var res=await CLOUD.from(CLOUD_TABLE).upsert(row,{onConflict:'id'});
+  if(res.error){setCloudStatus('Cloud upload failed. '+res.error.message,'err');return;}
+  setCloudStatus('Local data uploaded to cloud.','ok');
+  if(!silent)toast('Local data uploaded to cloud','ok');
+}
+function queueCloudSave(){
+  if(CLOUD_LOADING||!CLOUD_READY||!CLOUD)return;
+  clearTimeout(CLOUD_TIMER);
+  CLOUD_TIMER=setTimeout(function(){uploadLocalToCloud(true);},700);
+}
+function subscribeCloudChanges(){
+  if(!CLOUD)return;
+  var cfg=cloudCfg();
+  if(CLOUD_CHANNEL)CLOUD.removeChannel(CLOUD_CHANNEL);
+  CLOUD_CHANNEL=CLOUD.channel('wms-state-'+(cfg.warehouse||'main')).on('postgres_changes',{event:'*',schema:'public',table:CLOUD_TABLE,filter:'id=eq.'+(cfg.warehouse||'main')},function(payload){
+    if(payload.new&&payload.new.data){applyCloudSnapshot(payload.new.data);setCloudStatus('Live update received from cloud.','ok');}
+  }).subscribe(function(status){if(status==='SUBSCRIBED')setCloudStatus('Connected. Live sync is active.','ok');});
+}
+function supabaseSqlText(){
+  return [
+    'create table if not exists public.wms_state (',
+    '  id text primary key,',
+    "  data jsonb not null default '{}'::jsonb,",
+    '  updated_at timestamptz not null default now()',
+    ');',
+    '',
+    'alter table public.wms_state enable row level security;',
+    '',
+    'drop policy if exists "wms_state_read_write" on public.wms_state;',
+    'create policy "wms_state_read_write"',
+    'on public.wms_state for all',
+    'using (true)',
+    'with check (true);',
+    '',
+    'do $$',
+    'begin',
+    '  alter publication supabase_realtime add table public.wms_state;',
+    'exception when duplicate_object then null;',
+    'end $$;',
+    '',
+    'insert into public.wms_state (id, data)',
+    "values ('main', '{}'::jsonb)",
+    'on conflict (id) do nothing;'
+  ].join('\n');
+}
+function downloadSupabaseSql(){
+  var blob=new Blob([supabaseSqlText()],{type:'text/sql;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='supabase_wms_setup.sql';document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast('Supabase SQL downloaded','inf');
+}
+// ─── Masters ─────────────────────────────────────────────────────────────
+
+// Bulk upload and inventory exports
+function money(n){return (parseFloat(n)||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});}
+function cleanCode(v){return String(v||'').trim().toUpperCase();}
+function normHeader(h){return String(h||'').toLowerCase().replace(/[\s_\-./]+/g,'').replace(/[^a-z0-9]/g,'');}
+function parseNum(v){var n=parseFloat(String(v||'').replace(/,/g,''));return isNaN(n)?0:n;}
+function parseCSV(text){
+  var rows=[],row=[],val='',q=false;
+  for(var i=0;i<text.length;i++){
+    var ch=text.charAt(i);
+    if(q){if(ch==='"'){if(text.charAt(i+1)==='"'){val+='"';i++;}else q=false;}else val+=ch;}
+    else{if(ch==='"')q=true;else if(ch===','){row.push(val);val='';}else if(ch==='\n'){row.push(val);rows.push(row);row=[];val='';}else if(ch!=='\r')val+=ch;}
+  }
+  if(val!==''||row.length){row.push(val);rows.push(row);}
+  return rows.filter(function(r){return r.some(function(c){return String(c||'').trim()!=='';});});
+}
+function rowsToObjects(rows){
+  if(!rows||!rows.length)return [];
+  var first=rows[0].map(normHeader);
+  var known=['sku','skucode','itemcode','name','productname','product','bin','bincode','location','qty','quantity'];
+  var hasHeader=first.some(function(h){return known.indexOf(h)>=0;});
+  var headers=hasHeader?first:rows[0].map(function(_,i){return 'col'+i;});
+  var start=hasHeader?1:0,out=[];
+  for(var r=start;r<rows.length;r++){
+    var obj={};
+    for(var c=0;c<headers.length;c++)obj[headers[c]]=rows[r][c]==null?'':String(rows[r][c]).trim();
+    out.push(obj);
+  }
+  return out;
+}
+function pick(obj,names){for(var i=0;i<names.length;i++){var k=normHeader(names[i]);if(obj[k]!=null&&String(obj[k]).trim()!=='')return obj[k];}return '';}
+function isoDate(v){
+  if(v==null||v==='')return '';
+  if(typeof v==='number'||/^\d+(\.\d+)?$/.test(String(v))){var n=parseFloat(v);if(n>20000){var d=new Date(Date.UTC(1899,11,30)+n*86400000);return d.toISOString().slice(0,10);}}
+  var s=String(v).trim();
+  if(/^\d{4}-\d{1,2}-\d{1,2}/.test(s)){var p=s.split(/[ T]/)[0].split('-');return p[0]+'-'+('0'+p[1]).slice(-2)+'-'+('0'+p[2]).slice(-2);}
+  var m=s.match(/^(\d{1,2})[\/-](\d{1,2})[\/-](\d{2,4})$/);
+  if(m){var y=m[3].length===2?'20'+m[3]:m[3];return y+'-'+('0'+m[2]).slice(-2)+'-'+('0'+m[1]).slice(-2);}
+  return s;
+}
+function readSheetRows(ev,cb){
+  var file=ev.target.files[0]; if(!file)return;
+  var name=file.name.toLowerCase(); var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      if(name.endsWith('.csv')){cb(parseCSV(e.target.result));}
+      else if(name.endsWith('.xlsx')||name.endsWith('.xls')){
+        if(typeof XLSX==='undefined')throw new Error('Excel reader could not load. Save as CSV or connect internet once.');
+        var wb=XLSX.read(new Uint8Array(e.target.result),{type:'array'});
+        var ws=wb.Sheets[wb.SheetNames[0]];
+        cb(XLSX.utils.sheet_to_json(ws,{header:1,defval:''}));
+      }else{throw new Error('Use CSV or XLSX file.');}
+    }catch(err){toast(err.message,'err');}
+    ev.target.value='';
+  };
+  if(name.endsWith('.csv'))reader.readAsText(file);else reader.readAsArrayBuffer(file);
+}
+function dlSkuTemplate(){dlCSV('SKU_Master_Template_'+today()+'.csv',[['sku','name','brand','mrp','unit','category'],['DRB-40','DR.ORTHO BALM - 40GM','DR.ORTHO','136','pcs','Healthcare']]);}
+function uploadSkus(ev){
+  readSheetRows(ev,function(rows){
+    var data=rowsToObjects(rows),added=0,updated=0,skipped=0;
+    for(var i=0;i<data.length;i++){
+      var o=data[i]; var sku=cleanCode(pick(o,['sku','sku code','item code','col0'])); var name=pick(o,['name','product name','product','description','col1']);
+      if(!sku||!name){skipped++;continue;}
+      var rec={sku:sku,name:name,brand:pick(o,['brand','col2']),mrp:parseNum(pick(o,['mrp','price','rate','col3'])),unit:pick(o,['unit','uom','col4'])||'pcs',cat:pick(o,['category','cat','col5'])};
+      var ex=null; for(var j=0;j<SKUS.length;j++){if(SKUS[j].sku===sku){ex=SKUS[j];break;}}
+      if(ex){ex.name=rec.name||ex.name;ex.brand=rec.brand||ex.brand;ex.mrp=rec.mrp||ex.mrp;ex.unit=rec.unit||ex.unit;ex.cat=rec.cat||ex.cat;updated++;}
+      else{SKUS.push(rec);added++;}
+    }
+    save();renderSkuM();toast('SKU upload: '+added+' added, '+updated+' updated, '+skipped+' skipped','ok');
+  });
+}
+function dlBinTemplate(){dlCSV('BIN_Master_Template_'+today()+'.csv',[['bin','zone','aisle','rack'],['A-01','A','01','01'],['B-01','B','01','01']]);}
+function uploadBins(ev){
+  readSheetRows(ev,function(rows){
+    var data=rowsToObjects(rows),added=0,skipped=0;
+    for(var i=0;i<data.length;i++){
+      var b=cleanCode(pick(data[i],['bin','bin code','location','bin location','col0']));
+      if(!b){skipped++;continue;}
+      if(BINS.indexOf(b)<0){BINS.push(b);added++;}else skipped++;
+    }
+    BINS.sort();save();renderBinM();toast('BIN upload: '+added+' added, '+skipped+' skipped','ok');
+  });
+}
+function dlGrnTemplate(){dlCSV('GRN_Bulk_Template_'+today()+'.csv',[['sku','bin','qty','batch','vendor_sku','cost','mfg','exp','ean'],['DRB-40','A-01','10','BATCH001','VDR-DRB-40','80','2026-01-01','2027-01-01','8900000000000']]);}
+function uploadGrnRows(ev){
+  readSheetRows(ev,function(rows){
+    var data=rowsToObjects(rows),added=0,skipped=0;
+    if(MR.length===1&&!MR[0].qty&&!MR[0].bat)MR=[];
+    for(var i=0;i<data.length;i++){
+      var o=data[i]; var sku=cleanCode(pick(o,['sku','sku code','item code','col0'])); var bin=cleanCode(pick(o,['bin','bin code','location','col1'])); var qty=parseInt(pick(o,['qty','quantity','col2']),10);
+      var skuOk=SKUS.some(function(s){return s.sku===sku;}); var binOk=BINS.indexOf(bin)>=0;
+      if(!sku||!bin||!qty||qty<=0||!skuOk||!binOk){skipped++;continue;}
+      MR.push({id:genId(),sku:sku,bin:bin,qty:String(qty),bat:pick(o,['batch','batch code','lot','col3']),vsk:pick(o,['vendor sku','vendor_sku','vsku','col4']),cst:pick(o,['cost','cost unit','cost per unit','col5']),mfg:isoDate(pick(o,['mfg','mfg date','manufacturing date','col6'])),exp:isoDate(pick(o,['exp','expiry','expiry date','exp date','col7'])),ean:pick(o,['ean','barcode','col8'])});
+      added++;
+    }
+    renderRows();toast('GRN rows loaded: '+added+' added, '+skipped+' skipped','ok');
+  });
+}
+function expStatusText(exp){
+  if(!exp)return 'No Expiry';
+  var d=new Date(exp); var now=new Date(); now.setHours(0,0,0,0);
+  if(d<now)return 'Expired'; var soon=new Date(now); soon.setDate(soon.getDate()+30);
+  return d<=soon?'Near Expiry':'OK';
+}
+function inventoryRows(){
+  var rows=[];
+  for(var i=0;i<SKUS.length;i++){
+    var s=SKUS[i]; var st=skuStock(s.sku);
+    if(st.batches.length===0){rows.push({sku:s.sku,name:s.name,brand:s.brand,cat:s.cat||'',unit:s.unit,mrp:parseNum(s.mrp),bin:'',batch:'',mfg:'',exp:'',status:'No Stock',qty:0,cost:0,vsku:'',ean:'',stockValue:0,mrpValue:0});continue;}
+    for(var j=0;j<st.batches.length;j++){
+      var b=st.batches[j]; var qty=parseInt(b.qty)||0; var cost=parseNum(b.cost);
+      rows.push({sku:s.sku,name:s.name,brand:s.brand,cat:s.cat||'',unit:s.unit,mrp:parseNum(s.mrp),bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,status:expStatusText(b.exp),qty:qty,cost:cost,vsku:b.vsku||'',ean:b.ean||'',stockValue:qty*cost,mrpValue:qty*parseNum(s.mrp)});
+    }
+  }
+  return rows;
+}
+function renderInvSummary(){
+  var rows=inventoryRows(),qty=0,costVal=0,mrpVal=0,batches=0,skuMap={};
+  for(var i=0;i<rows.length;i++){qty+=rows[i].qty;costVal+=rows[i].stockValue;mrpVal+=rows[i].mrpValue;if(rows[i].qty>0){batches++;skuMap[rows[i].sku]=true;}}
+  sI('inv-summary',sc(String(qty),'Total Units','across all bins','var(--B)','var(--Bb)','var(--Bbd)')+sc(String(Object.keys(skuMap).length),'SKUs In Stock','active SKU count','var(--G)','var(--Gb)','var(--Gbd)')+sc('Rs. '+money(costVal),'Cost Value','stock valuation','var(--A)','var(--Ab)','var(--Abd)')+sc(String(batches),'Active Batches','FEFO sorted','var(--R)','var(--Rb)','var(--Rbd)'));
+}
+function dlInventory(){
+  var headers=['SKU','Product','Brand','Category','Unit','MRP','Bin','Batch','MFG Date','EXP Date','Expiry Status','Qty','Cost/Unit','Cost Value','MRP Value','Vendor SKU','EAN'];
+  var rows=[headers],data=inventoryRows();
+  for(var i=0;i<data.length;i++){var r=data[i];rows.push([r.sku,r.name,r.brand,r.cat,r.unit,r.mrp,r.bin,r.batch,r.mfg,r.exp,r.status,r.qty,r.cost,r.stockValue,r.mrpValue,r.vsku,r.ean]);}
+  dlCSV('WMS_Full_Inventory_'+today()+'.csv',rows);toast('Full inventory downloaded','inf');
+}
+function dlInventoryValuation(){
+  var rows=[['SKU','Product','Brand','Category','Unit','Total Qty','Average Cost','Cost Value','MRP','MRP Value','Active Batches']];
+  for(var i=0;i<SKUS.length;i++){
+    var s=SKUS[i],st=skuStock(s.sku),qty=0,costVal=0,batches=0;
+    for(var j=0;j<st.batches.length;j++){var b=st.batches[j];var q=parseInt(b.qty)||0;qty+=q;costVal+=q*parseNum(b.cost);if(q>0)batches++;}
+    rows.push([s.sku,s.name,s.brand,s.cat||'',s.unit,qty,qty?costVal/qty:0,costVal,parseNum(s.mrp),qty*parseNum(s.mrp),batches]);
+  }
+  dlCSV('WMS_Inventory_Valuation_'+today()+'.csv',rows);toast('Inventory valuation downloaded','inf');
+}
+function mTab(t){
+  ['skus','bins','data'].forEach(function(x){
+    sD('mv-'+x,x===t?'block':'none');
+    var el=gI('ms-'+x); if(el)el.classList.toggle('on',x===t);
+  });
+}
+
+function renderMasters(){
+  renderSkuM(); renderBinM();
+}
+
+function renderSkuM(){
+  var body=gI('m-sku-body'); if(!body)return;
+  var html='';
+  for(var i=0;i<SKUS.length;i++){
+    var s=SKUS[i];
+    html+='<tr><td><span class="chip">'+esc(s.sku)+'</span></td><td style="color:var(--tx)">'+esc(s.name)+'</td><td style="color:var(--tx2)">'+esc(s.brand)+'</td><td style="color:var(--tx3)">'+esc(s.cat||'')+'</td><td style="font-family:var(--fm);color:var(--A)">₹'+s.mrp+'</td><td style="color:var(--tx3)">'+esc(s.unit)+'</td><td><button class="btn bR bxs" onclick="delSku(\''+esc(s.sku)+'\')">Remove</button></td></tr>';
+  }
+  body.innerHTML=html;
+}
+
+function renderBinM(){
+  var body=gI('m-bin-body'); if(!body)return;
+  var html='';
+  for(var i=0;i<BINS.length;i++){
+    var b=BINS[i]; var hs=false;
+    for(var j=0;j<SKUS.length;j++){
+      var bl=(STOCK[SKUS[j].sku]||{})[b]||[];
+      for(var k=0;k<bl.length;k++){if(bl[k].qty>0){hs=true;break;}}
+      if(hs)break;
+    }
+    html+='<tr><td style="font-family:var(--fm);font-weight:500;color:var(--tx)">'+esc(b)+'</td><td>'+(hs?'<span class="tg tgG">Has Stock</span>':'<span class="tg" style="color:var(--tx3);background:var(--bg3)">Empty</span>')+'</td><td><button class="btn bR bxs"'+(hs?' disabled title="Move stock first"':'')+' onclick="delBin(\''+esc(b)+'\')">Remove</button></td></tr>';
+  }
+  body.innerHTML=html;
+}
+
+function addSku(){
+  var sku=gV('m-sk').toUpperCase(); var nm=gV('m-nm');
+  if(!sku||!nm){toast('SKU Code and Name are required','err');return;}
+  for(var i=0;i<SKUS.length;i++){if(SKUS[i].sku===sku){toast('SKU already exists','err');return;}}
+  SKUS.push({sku:sku,name:nm,brand:gV('m-br'),mrp:parseFloat(gV('m-mr'))||0,unit:gI('m-un').value,cat:gV('m-ct')});
+  ['m-sk','m-nm','m-br','m-mr','m-ct'].forEach(function(id){gI(id).value='';});
+  save(); renderSkuM();
+  toast('✓ SKU '+sku+' added','ok');
+}
+
+function delSku(sku){
+  if(!confirm('Delete SKU '+sku+'? Stock and transaction records are kept.'))return;
+  SKUS=SKUS.filter(function(s){return s.sku!==sku;});
+  save(); renderSkuM();
+  toast('SKU '+sku+' removed','wrn');
+}
+
+function addBin(){
+  var b=gV('m-bn').toUpperCase();
+  if(!b){toast('Enter a bin code','err');return;}
+  for(var i=0;i<BINS.length;i++){if(BINS[i]===b){toast('Bin already exists','err');return;}}
+  BINS.push(b); gI('m-bn').value='';
+  save(); renderBinM();
+  toast('✓ Bin '+b+' added','ok');
+}
+
+function delBin(b){
+  var hs=false;
+  for(var j=0;j<SKUS.length;j++){var bl=(STOCK[SKUS[j].sku]||{})[b]||[];for(var k=0;k<bl.length;k++){if(bl[k].qty>0){hs=true;break;}}if(hs)break;}
+  if(hs){toast('Cannot delete bin with stock','err');return;}
+  if(!confirm('Delete Bin '+b+'?'))return;
+  BINS=BINS.filter(function(x){return x!==b;});
+  save(); renderBinM();
+  toast('Bin '+b+' removed','wrn');
+}
+
+function backup(){
+  var d={skus:SKUS,bins:BINS,stock:STOCK,txns:TXNS,moves:MOVES,at:new Date().toISOString()};
+  var blob=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='WMS_Backup_'+today()+'.json';a.click();
+  toast('📦 Backup downloaded','inf');
+}
+
+function restore(ev){
+  var file=ev.target.files[0]; if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      var d=JSON.parse(e.target.result);
+      if(!d.skus||!d.bins)throw new Error('Invalid file format');
+      if(!confirm('Overwrite ALL current data?'))return;
+      SKUS=d.skus; BINS=d.bins; STOCK=d.stock||{}; TXNS=d.txns||[]; MOVES=d.moves||[];
+      save(); renderDash();
+      toast('✓ Restored: '+SKUS.length+' SKUs, '+TXNS.length+' txns','ok');
+    }catch(err){toast('Invalid backup: '+err.message,'err');}
+  };
+  reader.readAsText(file);
+}
+
+function clearHist(){
+  if(!confirm('Clear ALL transaction history? Cannot be undone.'))return;
+  TXNS=[];save();renderHist();
+  toast('History cleared','wrn');
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
+function fillSel(id,type){
+  var el=gI(id); if(!el)return;
+  var cur=el.value; var html='';
+  if(type==='bin'){for(var i=0;i<BINS.length;i++)html+='<option value="'+esc(BINS[i])+'">'+esc(BINS[i])+'</option>';}
+  else{for(var i=0;i<SKUS.length;i++)html+='<option value="'+esc(SKUS[i].sku)+'">'+esc(SKUS[i].sku)+' – '+esc(SKUS[i].name)+'</option>';}
+  el.innerHTML=html;
+  if(cur)el.value=cur;
+}
+
+function dlCSV(filename,rows){
+  var csv=rows.map(function(r){return r.map(function(c){return '"'+String(c==null?'':c).replace(/"/g,'""')+'"';}).join(',');}).join('\n');
+  var blob=new Blob(["\uFEFF"+csv],{type:'text/csv;charset=utf-8'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',function(){
+  sbCounts();
+  hFilt('ALL');
+  var d1=gI('oi-dt'); if(d1&&!d1.value)d1.value=today();
+  var d2=gI('oi-dd'); if(d2&&!d2.value)d2.value=today();
+  var d3=gI('ii-dt'); if(d3&&!d3.value)d3.value=today();
+  var page=LS.get('wms2_page','dashboard'); if(!gI('page-'+page))page='dashboard'; go(page);
+  initCloudUI();
+});
+</script>
+</body>
+</html>

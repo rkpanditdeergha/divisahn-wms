@@ -271,7 +271,7 @@ table.tb tr:hover td{background:rgba(59,158,255,.025);}
       </div>
       <div class="g4" style="margin-bottom:11px">
         <div class="fl"><label>Quantity <span class="rq">*</span></label><input class="inp" id="si-qty" type="number" min="1" placeholder="0"/></div>
-        <div class="fl"><label>Batch Code</label><input class="inp" id="si-bat" placeholder="BATCH001"/></div>
+        <div class="fl"><label>Batch Code</label><input class="inp" id="si-bat" placeholder="Leave blank until QC"/></div>
         <div class="fl"><label>Cost/Unit (₹)</label><input class="inp" id="si-cst" type="number" step="0.01" placeholder="0.00"/></div>
         <div class="fl"><label>Vendor SKU</label><input class="inp" id="si-vsk" placeholder="Vendor code"/></div>
       </div>
@@ -289,7 +289,7 @@ table.tb tr:hover td{background:rgba(59,158,255,.025);}
       <div class="sl-lbl">📋 Multi-SKU Lines</div>
       <div class="tw"><table class="gr-tb" id="gr-tb"><thead><tr>
         <th style="min-width:165px">SKU *</th><th style="min-width:80px">Bin *</th>
-        <th style="min-width:65px">Qty *</th><th style="min-width:100px">Batch</th>
+        <th style="min-width:65px">Qty *</th><th style="min-width:100px">Batch (optional)</th>
         <th style="min-width:85px">Vendor SKU</th><th style="min-width:90px">Cost/Unit</th>
         <th style="min-width:115px">MFG Date</th><th style="min-width:115px">EXP Date</th>
         <th style="min-width:95px">EAN</th><th style="width:36px"></th>
@@ -299,14 +299,20 @@ table.tb tr:hover td{background:rgba(59,158,255,.025);}
         <button class="btn bG" onclick="document.getElementById('grn-upload').click()">Upload GRN CSV / XLSX</button>
         <button class="btn bB" onclick="dlGrnTemplate()">Download GRN Template</button>
       </div>
-      <div class="hint">GRN Bulk Upload Sheet headers: sku, bin, qty, batch, vendor_sku, cost, mfg, exp, ean.</div>
+      <div class="hint">GRN Bulk Upload Sheet headers: sku, bin, qty, batch, vendor_sku, cost, mfg, exp, ean. Leave batch blank if QC will provide it later.</div>
       <div style="display:flex;gap:9px;margin-top:13px;flex-wrap:wrap">
         <button class="btn bN" onclick="addRow()">+ Add Row</button>
         <button class="btn bG" onclick="doMultiIn()">✓ Submit GRN</button>
       </div>
     </div>
   </div>
-</div>
+  <div class="card" id="qc-card" style="margin-top:14px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div><div class="sl-lbl" style="color:var(--A)">QC Pending Batch Update</div><div class="hint">Stock can be received without batch. When QC gives the batch, update it here.</div></div>
+      <button class="btn bA bsm" onclick="renderPendingBatches()">Refresh</button>
+    </div>
+    <div id="qc-batch-list" style="margin-top:12px"></div>
+  </div></div>
 
 <!-- STOCK OUT -->
 <div class="page" id="page-stockout">
@@ -315,7 +321,7 @@ table.tb tr:hover td{background:rgba(59,158,255,.025);}
   <div class="card" style="margin-bottom:14px">
     <div class="sl-lbl" style="color:var(--R)">🧾 Dispatch / Invoice Details</div>
     <div class="g3" style="margin-bottom:11px">
-      <div class="fl"><label>Invoice No <span class="rq">*</span></label><input class="inp" id="oi-no" placeholder="INV-OUT-001"/></div>
+      <div class="fl"><label>Invoice No / Pick No</label><input class="inp" id="oi-no" placeholder="Leave blank for auto PICK no"/></div>
       <div class="fl"><label>Invoice Date <span class="rq">*</span></label><input class="inp" id="oi-dt" type="date"/></div>
       <div class="fl"><label>Dispatch Date <span class="rq">*</span></label><input class="inp" id="oi-dd" type="date"/></div>
     </div>
@@ -365,6 +371,13 @@ table.tb tr:hover td{background:rgba(59,158,255,.025);}
       <div style="font-size:13px;color:var(--tx2)">Bill Total: <span style="font-family:var(--fm);font-size:20px;font-weight:500;color:var(--R)" id="mo-total">0</span></div>
       <button class="btn bR" onclick="doMultiStockOut()">Confirm Multi-SKU Dispatch</button>
     </div>
+  </div>
+  <div class="card" id="pd-card" style="margin-top:18px">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div><div class="sl-lbl" style="color:var(--R)">Pending Dispatch Invoice Update</div><div class="hint">If stock was picked before the final invoice number, enter the final invoice here later.</div></div>
+      <input class="inp" id="pd-q" placeholder="Search pending pick / SKU / customer..." style="max-width:280px" oninput="renderPendingDispatch()"/>
+    </div>
+    <div id="pd-list"></div>
   </div>
 </div>
 
@@ -590,6 +603,7 @@ var MOB   = []; // multi-SKU stock-out batch ref
 var BT_SEL = null; // selected bin transfer batch
 var BT_BATCHES = []; // bin transfer stock rows
 var HF    = 'ALL';
+var PD_GROUPS = []; // pending dispatch invoice groups
 
 function saveLocalOnly(){
   LS.set('wms2_skus', SKUS);
@@ -654,6 +668,20 @@ function expTag(exp){
 }
 
 // ─── Toast ──────────────────────────────────────────────────────────────
+function batchValue(v){v=String(v||'').trim();return v?v:makePendingBatch();}
+function makePendingBatch(){return 'QC-PENDING-'+genId().replace(/^T/,'').slice(-8);}
+function isPendingBatch(b){var s=String(b||'').trim().toUpperCase();return !s||s==='N/A'||s==='QC PENDING'||s.indexOf('QC-PENDING-')===0;}
+function displayBatch(b){var s=String(b||'').trim();if(isPendingBatch(s))return 'QC Pending';return s.replace(/QC-PENDING-[A-Z0-9]+/gi,'QC Pending');}
+function jsq(s){return String(s==null?'':s).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r?\n/g,' ');}
+function sameVal(a,b){return String(a||'')===String(b||'');}
+function autoPickNo(){return 'PICK-'+today().replace(/-/g,'')+'-'+Date.now().toString(36).toUpperCase().slice(-5);}
+function isPendingInvoice(t){return t&&t.type==='OUT'&&(t.pendingInvoice||String(t.invoiceNo||'').indexOf('PICK-')===0);}
+function safeFile(s){return String(s||'file').replace(/[^A-Za-z0-9_-]+/g,'_').replace(/^_+|_+$/g,'')||'file';}
+function editStockBatch(sku,bin,batch,mfg,exp){var cur=isPendingBatch(batch)?'':batch;var next=prompt('Enter final batch code for '+sku+' / '+bin,cur);if(next===null)return;next=String(next||'').trim();if(!next){toast('Enter final batch code. Keep QC Pending until known.','err');return;}if(sameVal(next,batch)){toast('Batch is unchanged','inf');return;}updateStockBatch(sku,bin,batch,mfg,exp,next);}
+function updateTxnSelectionFields(t){if(!t.selections||!t.selections.length)return;var bins=[],batches=[],mfgs=[],exps=[];for(var i=0;i<t.selections.length;i++){var s=t.selections[i];bins.push(s.bin||'');batches.push(s.batch||'');mfgs.push(s.mfg||'');exps.push(s.exp||'');}t.bin=bins.join(', ');t.batch=batches.join(', ');t.mfg=mfgs.join(', ');t.exp=exps.join(', ');}
+function updateTxnsBatch(sku,bin,oldBatch,mfg,exp,newBatch){for(var i=0;i<TXNS.length;i++){var t=TXNS[i];if(t.sku!==sku)continue;var changed=false;if(t.selections&&t.selections.length){for(var j=0;j<t.selections.length;j++){var s=t.selections[j];if((!s.sku||s.sku===sku)&&sameVal(s.bin,bin)&&sameVal(s.batch,oldBatch)&&sameVal(s.mfg,mfg)&&sameVal(s.exp,exp)){s.batch=newBatch;changed=true;}}if(changed)updateTxnSelectionFields(t);}else if(sameVal(t.bin,bin)&&sameVal(t.batch,oldBatch)&&sameVal(t.mfg,mfg)&&sameVal(t.exp,exp)){t.batch=newBatch;}}for(var m=0;m<MOVES.length;m++){if(MOVES[m].sku===sku&&sameVal(MOVES[m].batch,oldBatch)){MOVES[m].batch=newBatch;}}}
+function updateStockBatch(sku,bin,oldBatch,mfg,exp,newBatch){var list=(STOCK[sku]||{})[bin]||[];var qty=0,sample=null;for(var i=list.length-1;i>=0;i--){var line=list[i];if(sameVal(line.batch,oldBatch)&&sameVal(line.mfg,mfg)&&sameVal(line.exp,exp)){qty+=parseInt(line.qty)||0;if(!sample)sample={batch:newBatch,mfg:line.mfg,exp:line.exp,qty:0,cost:line.cost,ean:line.ean,vsku:line.vsku};list.splice(i,1);}}if(!qty){toast('Stock batch line not found. Refresh inventory and try again.','err');return;}var dest=null;for(var j=0;j<list.length;j++){if(sameVal(list[j].batch,newBatch)&&sameVal(list[j].mfg,mfg)&&sameVal(list[j].exp,exp)){dest=list[j];break;}}if(dest){dest.qty=(parseInt(dest.qty)||0)+qty;if(!dest.cost&&sample.cost)dest.cost=sample.cost;if(!dest.ean&&sample.ean)dest.ean=sample.ean;if(!dest.vsku&&sample.vsku)dest.vsku=sample.vsku;}else{sample.qty=qty;list.push(sample);}updateTxnsBatch(sku,bin,oldBatch,mfg,exp,newBatch);save();renderPendingBatches();renderInv();renderHist();if(gV('o-sku')===sku)loadSku();if(gV('mo-sku')===sku)loadMultiOutSku();toast('Batch updated to '+newBatch,'ok');}
+function renderPendingBatches(){var box=gI('qc-batch-list');if(!box)return;var rows=[];for(var i=0;i<SKUS.length;i++){var s=SKUS[i],st=skuStock(s.sku);for(var j=0;j<st.batches.length;j++){var b=st.batches[j];if((parseInt(b.qty)||0)>0&&isPendingBatch(b.batch))rows.push({sku:s.sku,name:s.name,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,qty:b.qty});}}if(rows.length===0){box.innerHTML='<div style="color:var(--tx3);font-size:13px;padding:14px 0">No QC pending batch stock found.</div>';return;}var html='<div class="tw"><table class="tb"><thead><tr><th>SKU</th><th>Product</th><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th style="text-align:right">Qty</th><th></th></tr></thead><tbody>';for(var r=0;r<rows.length;r++){var x=rows[r];html+='<tr><td><span class="chip">'+esc(x.sku)+'</span></td><td style="min-width:170px">'+esc(x.name)+'</td><td><span class="chip chipN">'+esc(x.bin)+'</span></td><td style="font-family:var(--fm);color:var(--A)">'+esc(displayBatch(x.batch))+'</td><td>'+fmtD(x.mfg)+'</td><td class="'+expCls(x.exp)+'">'+fmtD(x.exp)+'</td><td style="text-align:right;font-family:var(--fm);color:var(--G)">'+x.qty+'</td><td><button class="btn bB bxs" onclick="editStockBatch(\''+jsq(x.sku)+'\',\''+jsq(x.bin)+'\',\''+jsq(x.batch)+'\',\''+jsq(x.mfg)+'\',\''+jsq(x.exp)+'\')">Edit Batch</button></td></tr>';}box.innerHTML=html+'</tbody></table></div>';}
 function toast(msg,type){
   type=type||'ok';
   var wrap=gI('tw');
@@ -745,7 +773,7 @@ function renderDash(){
     for(var i=0;i<Math.min(10,TXNS.length);i++){
       var t=TXNS[i];
       var col2=t.type==='IN'?'var(--G)':'var(--R)';
-      rtHTML+='<div class="mrow"><span class="bg '+(t.type==='IN'?'bgi':'bgo')+'">'+t.type+'</span><span class="chip chipN" style="font-size:10px">'+esc(t.sku)+'</span><span style="font-size:11px;color:var(--tx3);flex:1">'+esc(t.bin||'')+(t.batch&&t.batch!=='N/A'?' · '+esc(t.batch):'')+'</span><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:'+col2+'">'+(t.type==='IN'?'+':'-')+t.qty+'</span></div>';
+      rtHTML+='<div class="mrow"><span class="bg '+(t.type==='IN'?'bgi':'bgo')+'">'+t.type+'</span><span class="chip chipN" style="font-size:10px">'+esc(t.sku)+'</span><span style="font-size:11px;color:var(--tx3);flex:1">'+esc(t.bin||'')+(t.batch&&!isPendingBatch(t.batch)?' · '+esc(displayBatch(t.batch)):(t.batch?' · '+esc(displayBatch(t.batch)):''))+'</span><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:'+col2+'">'+(t.type==='IN'?'+':'-')+t.qty+'</span></div>';
     }
   }
   sI('d-txns',rtHTML);
@@ -783,6 +811,7 @@ function initSI(){
   if(!gV('ii-dt')) gI('ii-dt').value=today();
   if(MR.length===0)addRow();
   renderRows();
+  renderPendingBatches();
 }
 
 function grnMode(m){
@@ -799,13 +828,14 @@ function doSingleIn(){
   var sku=gV('si-sku'),bin=gV('si-bin'),qty=parseInt(gV('si-qty'));
   if(!sku||!bin||!qty||qty<=0){toast('SKU, Bin and Quantity are required','err');return;}
   var txn={id:genId(),type:'IN',ts:fmtTs(),sku:sku,bin:bin,qty:qty,
-    batch:gV('si-bat')||'N/A',mfg:gV('si-mfg'),exp:gV('si-exp'),
+    batch:batchValue(gV('si-bat')),mfg:gV('si-mfg'),exp:gV('si-exp'),
     cost:parseFloat(gV('si-cst'))||0,vsku:gV('si-vsk'),ean:gV('si-ean'),
     invoiceNo:no,invoiceDate:dt,gateEntry:ge,remark:gV('ii-rm')};
   applyIn(txn); TXNS.unshift(txn); save();
   toast('✓ Stock IN: '+qty+' × '+sku+' → Bin '+bin,'ok');
   ['si-qty','si-bat','si-cst','si-vsk','si-ean'].forEach(function(id){gI(id).value='';});
   gI('si-mfg').value=''; gI('si-exp').value='';
+  renderPendingBatches();
 }
 
 function applyIn(txn){
@@ -855,6 +885,7 @@ function resetStockOutSkuView(){
   sD('o-bal','none'); sD('o-bcard','none'); sD('o-qcard','none');
   renderMultiOutCart();
   renderOQ();
+  renderPendingDispatch();
 }
 function refreshSkuSearch(selectId,inputId,msgId,autoLoad,preferCurrent){
   var q=gV(inputId);
@@ -908,7 +939,7 @@ function doMultiIn(){
     var r=MR[i]; var qty=parseInt(r.qty);
     if(!r.sku||!r.bin||!qty||qty<=0)continue;
     var txn={id:genId(),type:'IN',ts:fmtTs(),sku:r.sku,bin:r.bin,qty:qty,
-      batch:r.bat||'N/A',mfg:r.mfg,exp:r.exp,cost:parseFloat(r.cst)||0,vsku:r.vsk,ean:r.ean,
+      batch:batchValue(r.bat),mfg:r.mfg,exp:r.exp,cost:parseFloat(r.cst)||0,vsku:r.vsk,ean:r.ean,
       invoiceNo:no,invoiceDate:dt,gateEntry:ge,remark:gV('ii-rm')};
     applyIn(txn); TXNS.unshift(txn); cnt++; total+=qty;
   }
@@ -916,6 +947,7 @@ function doMultiIn(){
   save(); toast('✓ GRN submitted: '+cnt+' lines, '+total+' units','ok');
   MR=[{id:genId(),sku:SKUS[0]?SKUS[0].sku:'',bin:BINS[0]||'',qty:'',bat:'',vsk:'',cst:'',mfg:'',exp:'',ean:''}];
   renderRows();
+  renderPendingBatches();
 }
 
 // ─── Stock Out ────────────────────────────────────────────────────────────
@@ -930,6 +962,7 @@ function initSO(){
   sD('o-bal','none'); sD('o-bcard','none'); sD('o-qcard','none');
   renderMultiOutCart();
   renderOQ();
+  renderPendingDispatch();
 }
 
 function loadSku(){
@@ -950,7 +983,7 @@ function loadSku(){
       var ec=expCls(b.exp);
       var expired=b.exp&&new Date(b.exp)<new Date();
       bgHTML+='<div class="bc" id="bc-'+i+'" onclick="togBatch('+i+')">';
-      bgHTML+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px"><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:var(--tx)">'+esc(b.batch)+'</span><span class="chip chipN" style="font-size:10px">'+esc(b.bin)+'</span></div>';
+      bgHTML+='<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:7px"><span style="font-family:var(--fm);font-weight:500;font-size:13px;color:var(--tx)">'+esc(displayBatch(b.batch))+'</span><span class="chip chipN" style="font-size:10px">'+esc(b.bin)+'</span></div>';
       bgHTML+='<div style="font-size:11px;color:var(--tx3);margin-bottom:3px">MFG: <span style="color:var(--tx2)">'+fmtD(b.mfg)+'</span></div>';
       bgHTML+='<div style="font-size:11px;margin-bottom:7px">EXP: <span class="'+ec+'">'+fmtD(b.exp)+'</span> '+expTag(b.exp)+'</div>';
       bgHTML+='<div style="font-family:var(--fm);font-size:15px;font-weight:500;color:var(--G)">'+b.qty+' <span style="font-size:10px;color:var(--tx3)">'+esc(info.unit)+'</span></div>';
@@ -985,7 +1018,7 @@ function renderOQ(){
     var s=OS[i]; tot+=s.qty;
     var ec=expCls(s.exp);
     html+='<tr><td><span class="chip chipN">'+esc(s.bin)+'</span></td>';
-    html+='<td style="font-family:var(--fm);font-size:11.5px">'+esc(s.batch)+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11.5px">'+esc(displayBatch(s.batch))+'</td>';
     html+='<td style="font-size:11.5px">'+fmtD(s.mfg)+'</td>';
     html+='<td style="font-size:11.5px" class="'+ec+'">'+fmtD(s.exp)+'</td>';
     html+='<td style="font-family:var(--fm);color:var(--tx2)">'+s.maxQty+'</td>';
@@ -1010,7 +1043,8 @@ function remOS(i){
 
 function doStockOut(){
   var no=gV('oi-no'),dt=gV('oi-dt'),dd=gV('oi-dd');
-  if(!no){toast('Invoice No is required','err');return;}
+  var pending=!no;
+  if(pending)no=autoPickNo();
   if(!dt){toast('Invoice Date is required','err');return;}
   if(!dd){toast('Dispatch Date is required','err');return;}
   var sku=gV('o-sku');
@@ -1036,11 +1070,13 @@ function doStockOut(){
   var txn={id:genId(),type:'OUT',ts:fmtTs(),sku:sku,qty:totalQty,
     bin:bins.join(', '),batch:batches.join(', '),mfg:mfgs.join(', '),exp:exps.join(', '),
     invoiceNo:no,invoiceDate:dt,dispatchDate:dd,remark:gV('oi-rm'),
+    pendingInvoice:pending,pickNo:pending?no:'',
     selections:valid.map(function(s){return {bin:s.bin,batch:s.batch,mfg:s.mfg,exp:s.exp,qty:s.qty};})};
   TXNS.unshift(txn); save();
-  toast('✓ Stock OUT: '+totalQty+' × '+sku+' | Invoice '+no,'ok');
+  toast(pending?'Picking list created: '+no+' | Enter final invoice later':'✓ Stock OUT: '+totalQty+' × '+sku+' | Invoice '+no,pending?'wrn':'ok');
   OS=[]; gI('oi-no').value=''; gI('oi-rm').value='';
   loadSku();
+  renderPendingDispatch();
 }
 
 // ─── Inventory ────────────────────────────────────────────────────────────
@@ -1071,7 +1107,7 @@ function renderMultiOutBatches(){
   var html='<div class="tw"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>EXP</th><th>Available</th><th>Add Qty</th><th></th></tr></thead><tbody>';
   for(var i=0;i<MOB.length;i++){
     var b=MOB[i]; var used=moCartQty({sku:sku,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp}); var rem=(parseInt(b.qty)||0)-used;
-    html+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(b.batch||'N/A')+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td style="font-family:var(--fm);color:'+(rem>0?'var(--G)':'var(--tx3)')+'">'+rem+'</td><td><input class="inp" id="mo-add-'+i+'" type="number" min="1" max="'+rem+'" placeholder="0" style="width:90px;padding:6px 8px" '+(rem<=0?'disabled':'')+'/></td><td><button class="btn bB bxs" onclick="addMultiOutBatch('+i+')" '+(rem<=0?'disabled':'')+'>Add</button></td></tr>';
+    html+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(displayBatch(b.batch))+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td style="font-family:var(--fm);color:'+(rem>0?'var(--G)':'var(--tx3)')+'">'+rem+'</td><td><input class="inp" id="mo-add-'+i+'" type="number" min="1" max="'+rem+'" placeholder="0" style="width:90px;padding:6px 8px" '+(rem<=0?'disabled':'')+'/></td><td><button class="btn bB bxs" onclick="addMultiOutBatch('+i+')" '+(rem<=0?'disabled':'')+'>Add</button></td></tr>';
   }
   html+='</tbody></table></div><div style="font-size:11px;color:var(--tx3);margin-top:8px">Adding from '+esc(info.name)+'</div>';
   sI('mo-stock',html);
@@ -1082,7 +1118,7 @@ function addMultiOutBatch(idx){
   var used=moCartQty({sku:sku,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp}); var rem=(parseInt(b.qty)||0)-used;
   if(!qty||qty<=0){toast('Enter quantity to add','err');return;}
   if(qty>rem){toast('Quantity exceeds remaining stock for this batch','err');return;}
-  var line={sku:sku,name:skuInfo(sku).name,bin:b.bin,batch:b.batch||'N/A',mfg:b.mfg,exp:b.exp,available:b.qty,qty:qty};
+  var line={sku:sku,name:skuInfo(sku).name,bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,available:b.qty,qty:qty};
   var merged=false;
   for(var i=0;i<MO.length;i++){if(sameOutLine(MO[i],line)){MO[i].qty+=qty;merged=true;break;}}
   if(!merged)MO.push(line);
@@ -1098,7 +1134,7 @@ function renderMultiOutCart(){
   var html='';
   for(var i=0;i<MO.length;i++){
     var l=MO[i]; var ec=expCls(l.exp);
-    html+='<tr><td><span class="chip">'+esc(l.sku)+'</span></td><td style="color:var(--tx);min-width:150px">'+esc(l.name)+'</td><td><span class="chip chipN">'+esc(l.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(l.batch||'N/A')+'</td><td>'+fmtD(l.mfg)+'</td><td class="'+ec+'">'+fmtD(l.exp)+'</td><td style="font-family:var(--fm);color:var(--tx2)">'+l.available+'</td><td><input class="inp" type="number" min="1" max="'+l.available+'" value="'+l.qty+'" style="width:92px;padding:6px 8px" onchange="moUpd('+i+',this.value)"/></td><td><button class="btn bR bxs" onclick="moRemove('+i+')">Remove</button></td></tr>';
+    html+='<tr><td><span class="chip">'+esc(l.sku)+'</span></td><td style="color:var(--tx);min-width:150px">'+esc(l.name)+'</td><td><span class="chip chipN">'+esc(l.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(displayBatch(l.batch))+'</td><td>'+fmtD(l.mfg)+'</td><td class="'+ec+'">'+fmtD(l.exp)+'</td><td style="font-family:var(--fm);color:var(--tx2)">'+l.available+'</td><td><input class="inp" type="number" min="1" max="'+l.available+'" value="'+l.qty+'" style="width:92px;padding:6px 8px" onchange="moUpd('+i+',this.value)"/></td><td><button class="btn bR bxs" onclick="moRemove('+i+')">Remove</button></td></tr>';
   }
   body.innerHTML=html;sT('mo-total',moTotal());
 }
@@ -1109,14 +1145,15 @@ function currentOutLine(l){
 }
 function doMultiStockOut(){
   var no=gV('oi-no'),dt=gV('oi-dt'),dd=gV('oi-dd');
-  if(!no){toast('Invoice No is required','err');return;}
+  var pending=!no;
+  if(pending)no=autoPickNo();
   if(!dt){toast('Invoice Date is required','err');return;}
   if(!dd){toast('Dispatch Date is required','err');return;}
   if(MO.length===0){toast('Add SKU batches to dispatch cart','err');return;}
   for(var i=0;i<MO.length;i++){
     var l=MO[i]; var q=parseInt(l.qty)||0; var cur=currentOutLine(l);
     if(!q||q<=0){toast('Cart has invalid quantity','err');return;}
-    if(!cur||cur.line.qty<q){toast('Stock changed for '+l.sku+' / '+l.batch+'. Reload and try again.','err');return;}
+    if(!cur||cur.line.qty<q){toast('Stock changed for '+l.sku+' / '+displayBatch(l.batch)+'. Reload and try again.','err');return;}
   }
   var groups={};
   for(var i=0;i<MO.length;i++){
@@ -1131,11 +1168,61 @@ function doMultiStockOut(){
   for(var g=0;g<skuKeys.length;g++){
     var sku=skuKeys[g], lines=groups[sku], total=0,bins=[],batches=[],mfgs=[],exps=[];
     for(var j=0;j<lines.length;j++){total+=lines[j].qty;bins.push(lines[j].bin);batches.push(lines[j].batch);mfgs.push(lines[j].mfg);exps.push(lines[j].exp);}
-    TXNS.unshift({id:genId(),type:'OUT',ts:fmtTs(),sku:sku,qty:total,bin:bins.join(', '),batch:batches.join(', '),mfg:mfgs.join(', '),exp:exps.join(', '),invoiceNo:no,invoiceDate:dt,dispatchDate:dd,remark:gV('oi-rm'),selections:lines});
+    TXNS.unshift({id:genId(),type:'OUT',ts:fmtTs(),sku:sku,qty:total,bin:bins.join(', '),batch:batches.join(', '),mfg:mfgs.join(', '),exp:exps.join(', '),invoiceNo:no,invoiceDate:dt,dispatchDate:dd,remark:gV('oi-rm'),pendingInvoice:pending,pickNo:pending?no:'',selections:lines});
   }
   save();
-  toast('Multi-SKU dispatch submitted: '+skuKeys.length+' SKUs, '+moTotal()+' units','ok');
-  MO=[];gI('oi-no').value='';gI('oi-rm').value='';renderMultiOutCart();loadMultiOutSku();
+  toast(pending?'Picking list created: '+no+' | '+skuKeys.length+' SKUs, '+moTotal()+' units. Enter final invoice later':'Multi-SKU dispatch submitted: '+skuKeys.length+' SKUs, '+moTotal()+' units',pending?'wrn':'ok');
+  MO=[];gI('oi-no').value='';gI('oi-rm').value='';renderMultiOutCart();loadMultiOutSku();renderPendingDispatch();
+}
+function txnDetailLines(t){
+  var out=[];
+  if(t.selections&&t.selections.length){
+    for(var i=0;i<t.selections.length;i++){var s=t.selections[i];out.push({sku:s.sku||t.sku,bin:s.bin,batch:s.batch,mfg:s.mfg,exp:s.exp,qty:s.qty});}
+  }else out.push({sku:t.sku,bin:t.bin,batch:t.batch,mfg:t.mfg,exp:t.exp,qty:t.qty});
+  return out;
+}
+function pendingDispatchGroups(){
+  var map={},out=[];
+  for(var i=0;i<TXNS.length;i++){
+    var t=TXNS[i]; if(!isPendingInvoice(t))continue;
+    var key=t.pickNo||t.invoiceNo||t.id;
+    if(!map[key]){map[key]={pickNo:key,ids:[],txns:[],qty:0,skus:{},remark:'',invoiceDate:t.invoiceDate||today(),dispatchDate:t.dispatchDate||today()};out.push(map[key]);}
+    var g=map[key];g.ids.push(t.id);g.txns.push(t);g.qty+=parseInt(t.qty)||0;g.skus[t.sku]=true;if(!g.remark&&t.remark)g.remark=t.remark||'';
+  }
+  return out;
+}
+function dispatchRowsForGroup(g,invoiceNo,invoiceDate,dispatchDate){
+  var rows=[['Pick No','Invoice No','Invoice Date','Dispatch Date','SKU','Product','Bin','Batch','MFG','EXP','Qty','Remark','Txn ID']];
+  for(var i=0;i<g.txns.length;i++){
+    var t=g.txns[i],lines=txnDetailLines(t);
+    for(var j=0;j<lines.length;j++){var l=lines[j],info=skuInfo(l.sku);rows.push([g.pickNo,invoiceNo||t.invoiceNo||'',invoiceDate||t.invoiceDate||'',dispatchDate||t.dispatchDate||'',l.sku,info.name,l.bin||'',displayBatch(l.batch||''),l.mfg||'',l.exp||'',l.qty||0,t.remark||'',t.id]);}
+  }
+  return rows;
+}
+function renderPendingDispatch(){
+  var box=gI('pd-list');if(!box)return;
+  var q=(gV('pd-q')||'').toLowerCase();var groups=pendingDispatchGroups();PD_GROUPS=[];
+  for(var i=0;i<groups.length;i++){var g=groups[i];var skuText=Object.keys(g.skus).join(', ');var text=(g.pickNo+' '+skuText+' '+g.remark).toLowerCase();if(q&&text.indexOf(q)<0)continue;PD_GROUPS.push(g);}
+  if(PD_GROUPS.length===0){box.innerHTML='<div style="color:var(--tx3);font-size:13px;padding:14px 0">No pending picking invoices.</div>';return;}
+  var html='';
+  for(var x=0;x<PD_GROUPS.length;x++){
+    var g=PD_GROUPS[x],skus=Object.keys(g.skus).join(', ');
+    html+='<div style="border:1px solid var(--bd);border-radius:8px;padding:12px;margin-bottom:10px;background:var(--bg3)">';
+    html+='<div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px"><div><span class="chip">'+esc(g.pickNo)+'</span><span style="font-size:12px;color:var(--tx2);margin-left:8px">'+esc(skus)+' | '+g.qty+' units</span></div><button class="btn bB bxs" onclick="dlPickingList('+x+')">Picking CSV</button></div>';
+    html+='<div class="g3"><div class="fl"><label>Final Invoice No</label><input class="inp" id="pd-inv-'+x+'" placeholder="Enter invoice number"/></div><div class="fl"><label>Invoice Date</label><input class="inp" id="pd-idt-'+x+'" type="date" value="'+esc(g.invoiceDate||today())+'"/></div><div class="fl"><label>Dispatch Date</label><input class="inp" id="pd-ddt-'+x+'" type="date" value="'+esc(g.dispatchDate||today())+'"/></div></div>';
+    html+='<div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="btn bR bsm" onclick="finalizePendingInvoice('+x+')">Finalize Dispatch Invoice</button></div></div>';
+  }
+  box.innerHTML=html;
+}
+function dlPickingList(idx){var g=PD_GROUPS[idx];if(!g){toast('Pending pick not found','err');return;}dlCSV('Picking_List_'+safeFile(g.pickNo)+'_'+today()+'.csv',dispatchRowsForGroup(g,'','',''));toast('Picking CSV downloaded for '+g.pickNo,'inf');}
+function dlDispatchInvoiceRows(g,invoiceNo,invoiceDate,dispatchDate){dlCSV('Dispatch_Invoice_'+safeFile(invoiceNo)+'_'+today()+'.csv',dispatchRowsForGroup(g,invoiceNo,invoiceDate,dispatchDate));}
+function finalizePendingInvoice(idx){
+  var g=PD_GROUPS[idx];if(!g){toast('Pending pick not found','err');return;}
+  var no=gV('pd-inv-'+idx);if(!no){toast('Enter final invoice number','err');return;}
+  var invDate=gV('pd-idt-'+idx)||today(),dispDate=gV('pd-ddt-'+idx)||invDate,idMap={};
+  for(var i=0;i<g.ids.length;i++)idMap[g.ids[i]]=true;
+  for(var j=0;j<TXNS.length;j++){var t=TXNS[j];if(idMap[t.id]){t.invoiceNo=no;t.finalInvoiceNo=no;t.pendingInvoice=false;t.invoiceDate=invDate;t.dispatchDate=dispDate;t.finalizedAt=fmtTs();}}
+  save();dlDispatchInvoiceRows(g,no,invDate,dispDate);renderPendingDispatch();renderHist();toast('Dispatch invoice finalized: '+no,'ok');
 }
 function renderInv(){
   renderInvSummary();
@@ -1143,16 +1230,16 @@ function renderInv(){
   var html='';
   for(var i=0;i<SKUS.length;i++){
     var s=SKUS[i]; var st=skuStock(s.sku); var hay=(s.sku+' '+s.name+' '+s.brand+' '+(s.cat||'')).toLowerCase();
-    var batchMatch=st.batches.some(function(b){return (String(b.bin)+' '+String(b.batch)+' '+String(b.ean)+' '+String(b.vsku)).toLowerCase().indexOf(q)>=0;});
+    var batchMatch=st.batches.some(function(b){return (String(b.bin)+' '+String(b.batch)+' '+String(displayBatch(b.batch))+' '+String(b.ean)+' '+String(b.vsku)).toLowerCase().indexOf(q)>=0;});
     if(q&&hay.indexOf(q)<0&&!batchMatch)continue;
     var tot=st.total;
     var col=tot===0?'var(--tx3)':tot<20?'var(--R)':tot<50?'var(--A)':'var(--G)';
     var bHTML='';
     if(st.batches.length>0){
-      bHTML='<div class="tw" style="border-top:1px solid var(--bd)"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Status</th><th>Vendor SKU</th><th>EAN</th><th style="text-align:right">Qty</th><th style="text-align:right">Cost</th><th style="text-align:right">Value</th></tr></thead><tbody>';
+      bHTML='<div class="tw" style="border-top:1px solid var(--bd)"><table class="tb"><thead><tr><th>Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Status</th><th>Vendor SKU</th><th>EAN</th><th style="text-align:right">Qty</th><th style="text-align:right">Cost</th><th style="text-align:right">Value</th><th></th></tr></thead><tbody>';
       for(var j=0;j<st.batches.length;j++){
         var b=st.batches[j]; var ec=expCls(b.exp); var cost=parseNum(b.cost); var val=(parseInt(b.qty)||0)*cost;
-        bHTML+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm);font-size:11.5px">'+esc(b.batch)+'</td><td style="font-size:11.5px">'+fmtD(b.mfg)+'</td><td style="font-size:11.5px" class="'+ec+'">'+fmtD(b.exp)+'</td><td>'+expTag(b.exp)+'</td><td style="font-size:11px;color:var(--tx3)">'+esc(b.vsku||'')+'</td><td style="font-family:var(--fm);font-size:11px;color:var(--tx3)">'+esc(b.ean||'')+'</td><td style="text-align:right;font-family:var(--fm);font-weight:500;color:var(--G)">'+b.qty+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px">Rs. '+money(cost)+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px;color:var(--A)">Rs. '+money(val)+'</td></tr>';
+        bHTML+='<tr><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm);font-size:11.5px">'+esc(displayBatch(b.batch))+'</td><td style="font-size:11.5px">'+fmtD(b.mfg)+'</td><td style="font-size:11.5px" class="'+ec+'">'+fmtD(b.exp)+'</td><td>'+expTag(b.exp)+'</td><td style="font-size:11px;color:var(--tx3)">'+esc(b.vsku||'')+'</td><td style="font-family:var(--fm);font-size:11px;color:var(--tx3)">'+esc(b.ean||'')+'</td><td style="text-align:right;font-family:var(--fm);font-weight:500;color:var(--G)">'+b.qty+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px">Rs. '+money(cost)+'</td><td style="text-align:right;font-family:var(--fm);font-size:11px;color:var(--A)">Rs. '+money(val)+'</td><td><button class="btn bB bxs" onclick="editStockBatch(\''+jsq(s.sku)+'\',\''+jsq(b.bin)+'\',\''+jsq(b.batch)+'\',\''+jsq(b.mfg)+'\',\''+jsq(b.exp)+'\')">Edit Batch</button></td></tr>';
       }
       bHTML+='</tbody></table></div>';
     }
@@ -1177,7 +1264,7 @@ function dlLedger(sku){
     var t=filtered[i];
     var qIn=t.type==='IN'?t.qty:0; var qOut=t.type==='OUT'?t.qty:0;
     bal+=qIn-qOut;
-    rows.push([t.ts,t.type,t.sku,info.name,t.bin||'',t.batch||'',t.mfg||'',t.exp||'',qIn,qOut,bal,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'',t.id]);
+    rows.push([t.ts,t.type,t.sku,info.name,t.bin||'',displayBatch(t.batch||''),t.mfg||'',t.exp||'',qIn,qOut,bal,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'',t.id]);
   }
   dlCSV('Ledger_'+sku+'_'+today()+'.csv',rows);
   toast('📥 Ledger downloaded for '+sku,'inf');
@@ -1218,7 +1305,7 @@ function loadTransferSku(){
   html+='<div class="tw"><table class="tb"><thead><tr><th>Old Bin</th><th>Batch</th><th>MFG</th><th>EXP</th><th>Status</th><th>Available Qty</th><th></th></tr></thead><tbody>';
   for(var i=0;i<BT_BATCHES.length;i++){
     var b=BT_BATCHES[i];
-    html+='<tr id="tr-src-'+i+'"><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(b.batch||'N/A')+'</td><td>'+fmtD(b.mfg)+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td><span class="tg tgG">Available</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500">'+b.qty+'</td><td><button class="btn bB bxs" onclick="selectTransferBatch('+i+')">Select</button></td></tr>';
+    html+='<tr id="tr-src-'+i+'"><td><span class="chip chipN">'+esc(b.bin)+'</span></td><td style="font-family:var(--fm)">'+esc(displayBatch(b.batch))+'</td><td>'+fmtD(b.mfg)+'</td><td class="'+expCls(b.exp)+'">'+fmtD(b.exp)+'</td><td><span class="tg tgG">Available</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500">'+b.qty+'</td><td><button class="btn bB bxs" onclick="selectTransferBatch('+i+')">Select</button></td></tr>';
   }
   html+='</tbody></table></div>';
   sI('tr-stock-list',html);
@@ -1239,7 +1326,7 @@ function selectTransferBatch(idx){
   for(var i=0;i<BT_BATCHES.length;i++){var row=gI('tr-src-'+i);if(row)row.style.background=i===idx?'rgba(0,200,150,.08)':'';}
   var info=skuInfo(BT_SEL.sku);
   var newCount=fillTransferNewBins(BT_SEL.bin);
-  sI('tr-selected','<div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">SKU</div><div><span class="chip">'+esc(BT_SEL.sku)+'</span> '+esc(info.name)+'</div></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Status</div><span class="tg tgG">Available</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Bin</div><span class="chip chipN">'+esc(BT_SEL.bin)+'</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Batch</div><span style="font-family:var(--fm)">'+esc(BT_SEL.batch||'N/A')+'</span></div><div style="margin-left:auto;text-align:right"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Available</div><div style="font-family:var(--fm);font-size:22px;color:var(--G)">'+BT_SEL.qty+'</div></div>');
+  sI('tr-selected','<div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">SKU</div><div><span class="chip">'+esc(BT_SEL.sku)+'</span> '+esc(info.name)+'</div></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Status</div><span class="tg tgG">Available</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Old Bin</div><span class="chip chipN">'+esc(BT_SEL.bin)+'</span></div><div><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Batch</div><span style="font-family:var(--fm)">'+esc(displayBatch(BT_SEL.batch))+'</span></div><div style="margin-left:auto;text-align:right"><div style="font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Available</div><div style="font-family:var(--fm);font-size:22px;color:var(--G)">'+BT_SEL.qty+'</div></div>');
   var qty=gI('tr-qty'); if(qty){qty.value='';qty.max=BT_SEL.qty;qty.placeholder='Max '+BT_SEL.qty;}
   sD('tr-move-card',newCount>0?'block':'none');
   if(newCount===0)toast('Create another bin first. No destination bin available.','err');
@@ -1265,7 +1352,7 @@ function doBinTransfer(){
   for(var j=0;j<dest.length;j++){if(sameStockLine(dest[j],moved)){dest[j].qty+=qty;merged=true;break;}}
   if(!merged)dest.push(moved);
   var info=skuInfo(sku); var by=gV('tr-by')||'Admin'; LS.set('wms2_transfer_by',by);
-  var rec={id:genId(),sku:sku,name:info.name,unit:info.unit,oldStatus:'Available',newStatus:'Available',oldBin:oldBin,newBin:newBin,qty:qty,ts:fmtTs(),createdBy:by,batch:moved.batch||'N/A',mfg:moved.mfg,exp:moved.exp,ean:moved.ean||'',remark:gV('tr-rm')};
+  var rec={id:genId(),sku:sku,name:info.name,unit:info.unit,oldStatus:'Available',newStatus:'Available',oldBin:oldBin,newBin:newBin,qty:qty,ts:fmtTs(),createdBy:by,batch:moved.batch,mfg:moved.mfg,exp:moved.exp,ean:moved.ean||'',remark:gV('tr-rm')};
   MOVES.unshift(rec); save();
   toast('Moved '+qty+' x '+sku+' from '+oldBin+' to '+newBin,'ok');
   gI('tr-qty').value=''; gI('tr-rm').value='';
@@ -1278,7 +1365,7 @@ function renderTransferHistory(){
   var html='';
   for(var i=0;i<Math.min(MOVES.length,100);i++){
     var m=MOVES[i]; var info=skuInfo(m.sku);
-    html+='<tr><td><span class="chip">'+esc(m.sku)+'</span><div style="font-size:10px;color:var(--tx3);margin-top:3px">'+esc(m.ean||info.unit||'')+'</div></td><td style="color:var(--tx);min-width:170px">'+esc(m.name||info.name)+'</td><td><span class="tg tgG">'+esc(m.oldStatus||'Available')+'</span></td><td><span class="tg tgG">'+esc(m.newStatus||'Available')+'</span></td><td><span class="chip chipN">'+esc(m.oldBin)+'</span></td><td><span class="chip chipN">'+esc(m.newBin)+'</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500;text-align:right">'+m.qty+'</td><td style="font-size:11px;color:var(--tx2);white-space:nowrap">'+esc(m.ts)+'</td><td>'+esc(m.createdBy||'')+'</td><td style="font-family:var(--fm)">'+esc(m.batch||'N/A')+'</td><td style="color:var(--tx3)">'+esc(m.remark||'')+'</td></tr>';
+    html+='<tr><td><span class="chip">'+esc(m.sku)+'</span><div style="font-size:10px;color:var(--tx3);margin-top:3px">'+esc(m.ean||info.unit||'')+'</div></td><td style="color:var(--tx);min-width:170px">'+esc(m.name||info.name)+'</td><td><span class="tg tgG">'+esc(m.oldStatus||'Available')+'</span></td><td><span class="tg tgG">'+esc(m.newStatus||'Available')+'</span></td><td><span class="chip chipN">'+esc(m.oldBin)+'</span></td><td><span class="chip chipN">'+esc(m.newBin)+'</span></td><td style="font-family:var(--fm);color:var(--G);font-weight:500;text-align:right">'+m.qty+'</td><td style="font-size:11px;color:var(--tx2);white-space:nowrap">'+esc(m.ts)+'</td><td>'+esc(m.createdBy||'')+'</td><td style="font-family:var(--fm)">'+esc(displayBatch(m.batch))+'</td><td style="color:var(--tx3)">'+esc(m.remark||'')+'</td></tr>';
   }
   body.innerHTML=html;
 }
@@ -1286,7 +1373,7 @@ function dlTransfers(){
   var rows=[['SKU/EAN/UOM','Name','Old Status','New Status','Old Bin','New Bin','Quantity','Adjustment Time','Created By','Batch','Remark']];
   for(var i=0;i<MOVES.length;i++){
     var m=MOVES[i]; var info=skuInfo(m.sku);
-    rows.push([m.sku+(m.ean?' / '+m.ean:'')+' / '+(m.unit||info.unit||''),m.name||info.name,m.oldStatus||'Available',m.newStatus||'Available',m.oldBin,m.newBin,m.qty,m.ts,m.createdBy||'',m.batch||'N/A',m.remark||'']);
+    rows.push([m.sku+(m.ean?' / '+m.ean:'')+' / '+(m.unit||info.unit||''),m.name||info.name,m.oldStatus||'Available',m.newStatus||'Available',m.oldBin,m.newBin,m.qty,m.ts,m.createdBy||'',displayBatch(m.batch),m.remark||'']);
   }
   dlCSV('WMS_Bin_Transfers_'+today()+'.csv',rows);toast('Bin transfer CSV downloaded','inf');
 }
@@ -1330,7 +1417,7 @@ function renderHist(){
   for(var i=0;i<TXNS.length;i++){
     var t=TXNS[i];
     if(HF!=='ALL'&&t.type!==HF)continue;
-    if(q&&t.sku.toLowerCase().indexOf(q)<0&&(t.invoiceNo||'').toLowerCase().indexOf(q)<0&&(t.batch||'').toLowerCase().indexOf(q)<0)continue;
+    if(q&&t.sku.toLowerCase().indexOf(q)<0&&(t.invoiceNo||'').toLowerCase().indexOf(q)<0&&(t.batch||'').toLowerCase().indexOf(q)<0&&displayBatch(t.batch||'').toLowerCase().indexOf(q)<0)continue;
     rows.push(t);
   }
   sT('h-cnt',rows.length+' records');
@@ -1343,7 +1430,7 @@ function renderHist(){
     html+='<td><span class="chip">'+esc(t.sku)+'</span></td>';
     html+='<td style="font-size:11.5px;color:var(--tx2);max-width:150px">'+esc(skuInfo(t.sku).name)+'</td>';
     html+='<td style="font-family:var(--fm);font-size:11px">'+esc(t.bin||'')+'</td>';
-    html+='<td style="font-family:var(--fm);font-size:11px">'+esc(t.batch||'')+'</td>';
+    html+='<td style="font-family:var(--fm);font-size:11px">'+esc(displayBatch(t.batch||''))+'</td>';
     html+='<td style="font-size:11px">'+fmtD(t.mfg)+'</td>';
     var ec=expCls(t.exp);
     html+='<td style="font-size:11px" class="'+ec+'">'+fmtD(t.exp)+'</td>';
@@ -1363,7 +1450,7 @@ function expAll(){
   var rows=[headers];
   for(var i=0;i<TXNS.length;i++){
     var t=TXNS[i];
-    rows.push([t.id,t.ts,t.type,t.sku,skuInfo(t.sku).name,t.bin||'',t.batch||'',t.mfg||'',t.exp||'',t.qty,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'']);
+    rows.push([t.id,t.ts,t.type,t.sku,skuInfo(t.sku).name,t.bin||'',displayBatch(t.batch||''),t.mfg||'',t.exp||'',t.qty,t.invoiceNo||'',t.invoiceDate||'',t.gateEntry||t.dispatchDate||'',t.cost||'',t.remark||'']);
   }
   dlCSV('WMS_History_'+today()+'.csv',rows);
   toast('📥 Exported '+TXNS.length+' records','inf');
@@ -1603,7 +1690,7 @@ function inventoryRows(){
     if(st.batches.length===0){rows.push({sku:s.sku,name:s.name,brand:s.brand,cat:s.cat||'',unit:s.unit,mrp:parseNum(s.mrp),bin:'',batch:'',mfg:'',exp:'',status:'No Stock',qty:0,cost:0,vsku:'',ean:'',stockValue:0,mrpValue:0});continue;}
     for(var j=0;j<st.batches.length;j++){
       var b=st.batches[j]; var qty=parseInt(b.qty)||0; var cost=parseNum(b.cost);
-      rows.push({sku:s.sku,name:s.name,brand:s.brand,cat:s.cat||'',unit:s.unit,mrp:parseNum(s.mrp),bin:b.bin,batch:b.batch,mfg:b.mfg,exp:b.exp,status:expStatusText(b.exp),qty:qty,cost:cost,vsku:b.vsku||'',ean:b.ean||'',stockValue:qty*cost,mrpValue:qty*parseNum(s.mrp)});
+      rows.push({sku:s.sku,name:s.name,brand:s.brand,cat:s.cat||'',unit:s.unit,mrp:parseNum(s.mrp),bin:b.bin,batch:displayBatch(b.batch),mfg:b.mfg,exp:b.exp,status:expStatusText(b.exp),qty:qty,cost:cost,vsku:b.vsku||'',ean:b.ean||'',stockValue:qty*cost,mrpValue:qty*parseNum(s.mrp)});
     }
   }
   return rows;

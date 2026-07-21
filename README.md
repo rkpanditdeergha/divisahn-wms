@@ -1,2 +1,2 @@
 # divisahn-wms
-Divisa Heera nagar Warehouse
+Divisa MATTRESS Warehouse
